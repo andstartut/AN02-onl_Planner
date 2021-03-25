@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "io.techmeskills.an02onl_plannerapp"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
@@ -70,6 +70,8 @@ dependencies {
 
     implementation 'org.koin:koin-android-ext:2.2.2'
     implementation 'org.koin:koin-androidx-viewmodel:2.2.2'
+
+    implementation 'com.android.support:recyclerview-v7:29.0.0'
 
     implementation "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1"
 

@@ -2,6 +2,10 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Adapter
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
@@ -12,22 +16,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
     override val viewBinding: FragmentMainBinding by viewBinding()
 
-    private val viewModel: MainViewModel by viewModel()
-
-    var count: Int = 0
-        set(value) {
-            field = value
-            viewBinding.tvCount.text = field.toString()
-        }
+    private val viewModel: TaskModel by viewModel()
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewBinding.btnClicker.setOnClickListener {
-            count++
-        }
+        viewBinding.recyclerView.adapter = TaskRecyclerViewAdapter(viewModel.tasks)
+//        viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(viewModel.notes)
     }
 }
