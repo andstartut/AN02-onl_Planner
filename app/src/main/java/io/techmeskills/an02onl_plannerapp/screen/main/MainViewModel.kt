@@ -17,7 +17,6 @@ class MainViewModel : CoroutineViewModel() {
         Note("Купить картошки"),
         Note("Скачать кино в самолёт", "25.03.2021")
     )
-
 }
 
 class Note(
