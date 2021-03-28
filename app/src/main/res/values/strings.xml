@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">AN02ONL_PlannerApp</string>
     <string name="welcome">Welcome</string>
+    <string name="hint_in_etTypeNote">Type your note here</string>
+    <string name="send">Send</string>
 </resources>

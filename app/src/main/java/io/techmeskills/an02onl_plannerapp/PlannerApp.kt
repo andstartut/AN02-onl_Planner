@@ -1,6 +1,7 @@
 package io.techmeskills.an02onl_plannerapp
 
 import android.app.Application
+import android.view.Window
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.TaskModel
 import io.techmeskills.an02onl_plannerapp.screen.splash.SplashViewModel
