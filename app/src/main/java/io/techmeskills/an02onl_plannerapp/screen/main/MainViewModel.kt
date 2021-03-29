@@ -2,9 +2,9 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 
-class MainViewModel : CoroutineViewModel() {
+class MainViewModel() : CoroutineViewModel() {
 
-    val notes = listOf(
+    val notes = mutableListOf(
         Note("Помыть посуду"),
         Note("Забрать пальто из химчистки", "23.03.2021"),
         Note("Позвонить Ибрагиму"),
@@ -17,10 +17,9 @@ class MainViewModel : CoroutineViewModel() {
         Note("Купить картошки"),
         Note("Скачать кино в самолёт", "25.03.2021")
     )
-
 }
 
 class Note(
-    val title: String,
+    var title: String,
     val date: String? = null
 )
