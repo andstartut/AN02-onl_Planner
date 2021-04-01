@@ -3,6 +3,8 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.security.auth.callback.Callback
 
 class MainViewModel() : CoroutineViewModel() {
@@ -21,6 +23,9 @@ class MainViewModel() : CoroutineViewModel() {
     fun addNote(title: String) {
         notes.add(Note(title))
     }
+//    fun addNote(title: String) {
+//        notes.add(Note(title))
+//    }
 
     private val notes = mutableListOf(
         Note("Помыть посуду"),
