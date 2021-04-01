@@ -1,10 +1,28 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
+import javax.security.auth.callback.Callback
 
 class MainViewModel() : CoroutineViewModel() {
 
-    val notes = mutableListOf(
+    var data: MutableLiveData<List<Note>> = MutableLiveData()
+
+
+    fun getNotes(): MutableLiveData<List<Note>> {
+        return data
+    }
+
+    private fun loadNotes(): List<Note> {
+        return notes
+    }
+
+    fun addNote(title: String) {
+        notes.add(Note(title))
+    }
+
+    private val notes = mutableListOf(
         Note("Помыть посуду"),
         Note("Забрать пальто из химчистки", "23.03.2021"),
         Note("Позвонить Ибрагиму"),
@@ -17,9 +35,14 @@ class MainViewModel() : CoroutineViewModel() {
         Note("Купить картошки"),
         Note("Скачать кино в самолёт", "25.03.2021")
     )
+
+    init {
+        data.value = loadNotes()
+    }
 }
 
 class Note(
     var title: String,
     val date: String? = null
 )
+
