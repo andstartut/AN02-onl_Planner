@@ -2,10 +2,15 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
+import io.techmeskills.an02onl_plannerapp.screen.addNew.AddNewFragment
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,28 +25,28 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
         viewBinding.toolbar.setPadding(0, 0, 0, 0)
-//        viewBinding.recyclerView.setPadding(0, 0, 0, bottom)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        viewBinding.recyclerView.adapter = TaskRecyclerViewAdapter(viewModel.tasks)
-        viewModel.getNotes()?.observe(viewLifecycleOwner, {
+        viewModel.data.observe(viewLifecycleOwner, {
             viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(it)
         })
 
-
-        viewBinding.btnSendNote.setOnClickListener {
-            val titleText = viewBinding.etTypeNote.text.toString()
-            if (titleText.isNotEmpty()) {
-                viewModel.launch(Dispatchers.Main) {
-                    viewModel.addNote(titleText)
-                    viewBinding.recyclerView.adapter?.notifyDataSetChanged()
-                }
-//                viewModel.notes.add(Note(titleText))
-//                viewBinding.recyclerView.adapter = NotesRecyclerViewAdapter(viewModel.notes)
-                viewBinding.etTypeNote.text.clear()
-            }
+        viewBinding.btnAddNew.setOnClickListener { view ->
+            view.findNavController()
+                .navigate(MainFragmentDirections.actionMainFragmentToAddNewFragment2())
         }
+        setFragmentResultListener(AddNewFragment.NEW_NOTE) { key, bundle ->
+            val note = bundle.getString(AddNewFragment.NOTE_TEXT)
+            val date = bundle.getString(AddNewFragment.DATE)
+            if (date.isNullOrBlank()) {
+                viewModel.addNote(note!!)
+            } else {
+                viewModel.addNote(note!!, date!!)
+            }
+//            viewBinding.recyclerView.scrollToPosition(viewBinding.recyclerView.adapter!!.itemCount - 1)
+        }
+//                viewBinding.recyclerView.adapter?.notifyDataSetChanged()
     }
 }
