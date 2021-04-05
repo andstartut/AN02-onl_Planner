@@ -1,31 +1,29 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import javax.security.auth.callback.Callback
+import kotlinx.coroutines.launch
 
 class MainViewModel() : CoroutineViewModel() {
 
-    var data: MutableLiveData<List<Note>> = MutableLiveData()
-
-
-    fun getNotes(): MutableLiveData<List<Note>> {
-        return data
-    }
+    val data: MutableLiveData<List<Note>> = MutableLiveData()
 
     private fun loadNotes(): List<Note> {
         return notes
     }
 
     fun addNote(title: String) {
-        notes.add(Note(title))
+        launch(Dispatchers.Main) {
+            notes.add(Note(title))
+        }
     }
-//    fun addNote(title: String) {
-//        notes.add(Note(title))
-//    }
+
+    fun addNote(title: String, date: String) {
+        launch(Dispatchers.Main) {
+            notes.add(Note(title, date))
+        }
+    }
 
     private val notes = mutableListOf(
         Note("Помыть посуду"),

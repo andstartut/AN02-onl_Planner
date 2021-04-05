@@ -21,6 +21,19 @@
         android:id="@+id/mainFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.main.MainFragment"
         android:label="MainFragment"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_addNewFragment2"
+            app:destination="@id/addNewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.addNew.AddNewFragment"
+        android:label="AddNewFragment"
+        tools:layout="@layout/fragment_add_new" >
+        <action
+            android:id="@+id/action_addNewFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 
 </navigation>
