@@ -13,15 +13,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/toolbar_addNew"
         app:titleTextColor="@color/white" />
 
     <EditText
         android:id="@+id/etTypeNote"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="4dp"
+        android:minHeight="50dp"
+        android:maxHeight="200dp"
+        android:gravity="center"
         android:background="@drawable/edittext_border"
+        android:textSize="18dp"
         android:hint="@string/hint_in_etTypeNote"
         android:importantForAutofill="no"
         android:inputType="textCapSentences"
@@ -35,16 +38,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnCreate"
+        app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etTypeNote" />
 
     <Button
-        android:id="@id/btnCreate"
+        android:id="@id/btnConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/create"
+        android:text="@string/confirm"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

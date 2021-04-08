@@ -4,7 +4,8 @@
     <string name="hint_in_etTypeNote">Type your note here</string>
     <string name="send">Send</string>
     <string name="add">ADD</string>
-    <string name="create">Create</string>
+    <string name="confirm">Confirm</string>
     <string name="toolbar_addNew">Add new note</string>
+    <string name="toolbar_editNote">Edit note</string>
     <string name="toolbar">Planner App</string>
 </resources>
