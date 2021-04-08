@@ -23,17 +23,19 @@
         android:label="MainFragment"
         tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_mainFragment_to_addNewFragment2"
-            app:destination="@id/addNewFragment" />
+            android:id="@+id/action_mainFragment_to_noteDetailsFragment"
+            app:destination="@id/noteDetailFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addNewFragment"
-        android:name="io.techmeskills.an02onl_plannerapp.screen.addNew.AddNewFragment"
-        android:label="AddNewFragment"
-        tools:layout="@layout/fragment_add_new" >
-        <action
-            android:id="@+id/action_addNewFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+        android:id="@+id/noteDetailFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.noteDetails.NoteDetailsFragment"
+        android:label="NoteDetailsFragment"
+        tools:layout="@layout/fragment_note_details">
+        <argument
+            android:name="toolbar"
+            app:argType="string" />
+        <argument
+            android:name="noteText"
+            app:argType="string" />
     </fragment>
-
 </navigation>
