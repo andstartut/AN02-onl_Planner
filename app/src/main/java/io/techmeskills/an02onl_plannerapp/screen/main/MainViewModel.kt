@@ -9,32 +9,20 @@ class MainViewModel() : CoroutineViewModel() {
 
     val data: MutableLiveData<List<Note>> = MutableLiveData()
 
-    fun loadNotes(): List<Note> {
+    private fun loadNotes(): List<Note> {
         return notes
     }
 
-    fun addNote(title: String) {
-        launch(Dispatchers.Main) {
-            notes.add(Note(title))
-        }
-    }
-
     fun addNote(title: String, date: String) {
-        launch(Dispatchers.Main) {
-            notes.add(Note(title, date))
+        launch() {
+            notes.add(0, Note(title, date))
         }
     }
 
     fun editNote(title: String, date: String, position: Int) {
-        launch(Dispatchers.Main) {
+        launch() {
             notes[position].title = title
             notes[position].date = date
-        }
-    }
-
-    fun editNote(title: String, position: Int) {
-        launch(Dispatchers.Main) {
-            notes[position].title = title
         }
     }
 

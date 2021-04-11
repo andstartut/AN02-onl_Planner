@@ -34,21 +34,20 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     setFragmentResultListener(NoteDetailsFragment.EDIT_NOTE) { key, bundle ->
                         val note = bundle.getString(NoteDetailsFragment.NOTE_TEXT)
                         val date = bundle.getString(NoteDetailsFragment.DATE)
-                        if (date.isNullOrBlank()) {
-                            viewModel.editNote(note!!, it)
-                        } else {
-                            viewModel.editNote(note!!, date, it)
+                        val position = it
+                        date?.let {
+                            viewModel.editNote(note!!, date, position)
                         }
                     }
                     val bundle = bundleOf(
                         Pair(NoteDetailsFragment.TOOLBAR, TOOLBAR_EDIT),
-                        Pair(NoteDetailsFragment.NOTE_TEXT, viewModel.loadNotes()[it].title),
-                        Pair(NoteDetailsFragment.DATE, viewModel.loadNotes()[it].date),
+                        Pair(NoteDetailsFragment.NOTE_TEXT, viewModel.data.value?.get(it)?.title),
+                        Pair(NoteDetailsFragment.DATE, viewModel.data.value?.get(it)?.date),
                     )
-                    viewBinding.recyclerView.adapter?.notifyDataSetChanged()
                     view.findNavController().navigate(R.id.action_mainFragment_to_noteDetailsFragment,
                     bundle)
                 })
+//            viewBinding.recyclerView.scrollToPosition(viewBinding.recyclerView.adapter!!.itemCount - 1)
         })
 
         viewBinding.btnAddNew.setOnClickListener {
@@ -64,13 +63,10 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         setFragmentResultListener(NoteDetailsFragment.NEW_NOTE) { key, bundle ->
             val note = bundle.getString(NoteDetailsFragment.NOTE_TEXT)
             val date = bundle.getString(NoteDetailsFragment.DATE)
-            if (date.isNullOrBlank()) {
-                viewModel.addNote(note!!)
-            } else {
+            date?.let{
                 viewModel.addNote(note!!, date)
             }
-            viewBinding.recyclerView.adapter?.notifyDataSetChanged()
-//            viewBinding.recyclerView.scrollToPosition(viewBinding.recyclerView.adapter!!.itemCount - 1)
+//            viewBinding.recyclerView.adapter?.notifyDataSetChanged()
         }
     }
     companion object {

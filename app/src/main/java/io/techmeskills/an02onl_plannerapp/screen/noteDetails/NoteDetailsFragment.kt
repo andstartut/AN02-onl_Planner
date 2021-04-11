@@ -3,7 +3,6 @@ package io.techmeskills.an02onl_plannerapp.screen.noteDetails
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.os.TokenWatcher
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.setFragmentResult
@@ -17,12 +16,17 @@ import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import org.joda.time.DateTime
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class NoteDetailsFragment :
     NavigationFragment<FragmentNoteDetailsBinding>(R.layout.fragment_note_details),
     DatePickerListener {
 
+    private var dateToDateTime: DateTime? = null
     private var date: String = ""
+
+    private val dateFormatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     override val viewBinding: FragmentNoteDetailsBinding by viewBinding()
 
@@ -32,19 +36,29 @@ class NoteDetailsFragment :
 
         dataPickerInit()
 
+        fun stringToDate(): DateTime? {
+            return if (arguments?.getString(DATE) !== null) {
+                DateTime(dateFormatter.parse(arguments?.getString(DATE))?.time)
+            } else {
+                DateTime()
+            }
+        }
+
+
+
         viewBinding.toolbar.title = arguments?.getString(TOOLBAR)
         viewBinding.etTypeNote.setText(arguments?.getString(NOTE_TEXT))
-//        viewBinding.datePicker.setDate()
+        viewBinding.datePicker.setDate(stringToDate())
         if (arguments?.getString(TOOLBAR) == MainFragment.TOOLBAR_EDIT) {
             viewBinding.btnConfirm.setOnClickListener {
                 val noteText = viewBinding.etTypeNote.text.toString()
-                    setFragmentResult(EDIT_NOTE, Bundle().apply {
-                        putString(NOTE_TEXT, noteText)
-                        putString(DATE, date)
-                    })
+                setFragmentResult(EDIT_NOTE, Bundle().apply {
+                    putString(NOTE_TEXT, noteText)
+                    putString(DATE, date)
+                })
                 findNavController().popBackStack()
             }
-        }else{
+        } else {
             viewBinding.btnConfirm.setOnClickListener {
                 val noteText = viewBinding.etTypeNote.text.toString()
                 if (noteText.isNotBlank()) {
@@ -63,7 +77,7 @@ class NoteDetailsFragment :
     }
 
     override fun onDateSelected(dateSelected: DateTime?) {
-        date = dateSelected?.toLocalDate().toString()
+        date = dateFormatter.format(dateSelected?.toDate())
     }
 
     override val backPressedCallback: OnBackPressedCallback
@@ -77,7 +91,7 @@ class NoteDetailsFragment :
     private fun dataPickerInit() {
         viewBinding.datePicker
             .setListener(this)
-            .setOffset(3)
+            .setOffset(60)
             .setDateSelectedColor(R.color.alfa_corso)
             .setDateSelectedTextColor(Color.WHITE)
             .setMonthAndYearTextColor(Color.DKGRAY)
