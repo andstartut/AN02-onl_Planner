@@ -4,15 +4,17 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.jhonnyx2012.horizontalpicker.DatePickerListener
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
-import io.techmeskills.an02onl_plannerapp.screen.main.MainFragment
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
+import io.techmeskills.an02onl_plannerapp.screen.main.Note
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import org.joda.time.DateTime
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,8 +25,7 @@ class NoteDetailsFragment :
     NavigationFragment<FragmentNoteDetailsBinding>(R.layout.fragment_note_details),
     DatePickerListener {
 
-    private var dateToDateTime: DateTime? = null
-    private var date: String = ""
+    private var getDate: String = ""
 
     private val dateFormatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
@@ -32,42 +33,39 @@ class NoteDetailsFragment :
 
     private val viewModel: MainViewModel by viewModel()
 
+    private val args: NoteDetailsFragmentArgs by navArgs()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         dataPickerInit()
 
-        fun stringToDate(): DateTime? {
-            return if (arguments?.getString(DATE) !== null) {
-                DateTime(dateFormatter.parse(arguments?.getString(DATE))?.time)
+        val stringToDate = DateTime(dateFormatter.parse(args.note?.date)?.time)
+
+        viewBinding.btnConfirm.setOnClickListener {
+            if (viewBinding.etTypeNote.text.isNotBlank()) {
+                setFragmentResult(NOTE_RESULT, Bundle().apply {
+                    putParcelable(
+                        NOTE,
+                        Note(
+                            if (args.note == null) NEW_NOTE_INDEX else args.note!!.id,
+                            viewBinding.etTypeNote.text.toString(),
+                            getDate
+                        )
+                    )
+                })
+                findNavController().popBackStack()
             } else {
-                DateTime()
+                Toast.makeText(requireContext(), "Please, enter your note", Toast.LENGTH_LONG).show()
             }
         }
 
-
-
-        viewBinding.toolbar.title = arguments?.getString(TOOLBAR)
-        viewBinding.etTypeNote.setText(arguments?.getString(NOTE_TEXT))
-        viewBinding.datePicker.setDate(stringToDate())
-        if (arguments?.getString(TOOLBAR) == MainFragment.TOOLBAR_EDIT) {
-            viewBinding.btnConfirm.setOnClickListener {
-                val noteText = viewBinding.etTypeNote.text.toString()
-                setFragmentResult(EDIT_NOTE, Bundle().apply {
-                    putString(NOTE_TEXT, noteText)
-                    putString(DATE, date)
-                })
-                findNavController().popBackStack()
-            }
-        } else {
-            viewBinding.btnConfirm.setOnClickListener {
-                val noteText = viewBinding.etTypeNote.text.toString()
-                if (noteText.isNotBlank()) {
-                    setFragmentResult(NEW_NOTE, Bundle().apply {
-                        putString(NOTE_TEXT, noteText)
-                        putString(DATE, date)
-                    })
+        args.note?.let { note ->
+            viewBinding.run {
+                etTypeNote.setText(note.title)
+                if (!args.note?.date.isNullOrBlank()) {
+                    datePicker.setDate(stringToDate)
                 }
-                findNavController().popBackStack()
+                toolbar.title = TOOLBAR_TITLE
             }
         }
     }
@@ -77,7 +75,7 @@ class NoteDetailsFragment :
     }
 
     override fun onDateSelected(dateSelected: DateTime?) {
-        date = dateFormatter.format(dateSelected?.toDate())
+        getDate = dateFormatter.format(dateSelected?.toDate())
     }
 
     override val backPressedCallback: OnBackPressedCallback
@@ -104,10 +102,9 @@ class NoteDetailsFragment :
     }
 
     companion object {
-        const val NOTE_TEXT = "noteText"
-        const val DATE = "date"
-        const val NEW_NOTE = "newNote"
-        const val TOOLBAR = "toolbar"
-        const val EDIT_NOTE = "editNote"
+        const val NEW_NOTE_INDEX = -1
+        const val NOTE = "Note"
+        const val TOOLBAR_TITLE = "Edit Note"
+        const val NOTE_RESULT = "NoteResult"
     }
 }

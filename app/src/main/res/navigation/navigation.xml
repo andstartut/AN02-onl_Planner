@@ -32,10 +32,8 @@
         android:label="NoteDetailsFragment"
         tools:layout="@layout/fragment_note_details">
         <argument
-            android:name="toolbar"
-            app:argType="string" />
-        <argument
-            android:name="noteText"
-            app:argType="string" />
+            android:name="note"
+            app:argType="io.techmeskills.an02onl_plannerapp.screen.main.Note"
+            app:nullable="true"/>
     </fragment>
 </navigation>
