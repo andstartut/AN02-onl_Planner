@@ -2,10 +2,11 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
@@ -26,8 +27,8 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 MainFragmentDirections.actionMainFragmentToNoteDetailsFragment(note)
             )
         },
-        onDelete = {
-            viewModel.deleteNote(it)
+        onDelete = {int -> 
+            viewModel.deleteNote(int)
         }
     )
 
@@ -61,6 +62,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             }
 //            viewBinding.recyclerView.adapter?.notifyDataSetChanged()
         }
+
+        val swipeHandler = object : SwipeToDeleteCallback() {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.removeAt(viewHolder.adapterPosition)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(viewBinding.recyclerView)
     }
 }
 

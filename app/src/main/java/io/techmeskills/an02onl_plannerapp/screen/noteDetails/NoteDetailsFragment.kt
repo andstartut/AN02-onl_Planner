@@ -39,7 +39,14 @@ class NoteDetailsFragment :
 
         dataPickerInit()
 
-        val stringToDate = DateTime(dateFormatter.parse(args.note?.date)?.time)
+        fun stringToDate(): DateTime? {
+            return if (!args.note?.date.isNullOrBlank()) {
+                DateTime(dateFormatter.parse(args.note?.date)?.time)
+            } else {
+                null
+            }
+        }
+
 
         viewBinding.btnConfirm.setOnClickListener {
             if (viewBinding.etTypeNote.text.isNotBlank()) {
@@ -63,7 +70,7 @@ class NoteDetailsFragment :
             viewBinding.run {
                 etTypeNote.setText(note.title)
                 if (!args.note?.date.isNullOrBlank()) {
-                    datePicker.setDate(stringToDate)
+                    datePicker.setDate(stringToDate())
                 }
                 toolbar.title = TOOLBAR_TITLE
             }

@@ -1,11 +1,13 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.graphics.Canvas
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.ListAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.techmeskills.an02onl_plannerapp.R
 import kotlin.reflect.KFunction1
@@ -25,6 +27,12 @@ class NotesAdapter(
 
     private fun onItemClick(position: Int) = onClick(getItem(position))
 
+    fun removeAt(position: Int) {
+        onDelete(position)
+//        .removeAt(position)
+//        notifyItemRemoved(position)
+    }
+
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
@@ -33,8 +41,7 @@ class NotesAdapter(
         itemView: View,
         private val onClick: KFunction1<Int, Unit>,
         private val OnDelete: (Int) -> Unit
-    ) :
-        RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(itemView) {
 
         private val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
         private val tvDate = itemView.findViewById<TextView>(R.id.tvDate)

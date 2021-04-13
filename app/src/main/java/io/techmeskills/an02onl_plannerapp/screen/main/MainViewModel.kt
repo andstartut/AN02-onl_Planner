@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel() : CoroutineViewModel() {
@@ -41,7 +42,7 @@ class MainViewModel() : CoroutineViewModel() {
     }
 
     fun deleteNote(position: Int) {
-        launch {
+        launch(Dispatchers.Main) {
             notes.removeAt(position)
             data.postValue(notes)
         }
