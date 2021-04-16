@@ -1,8 +1,9 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import io.techmeskills.an02onl_plannerapp.data.db.NotesDatabase
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 
-class TaskModel : CoroutineViewModel() {
+class TaskModel(val database: NotesDatabase) : CoroutineViewModel() {
 
     val tasks = listOf(
         Task("Помыть кошку", "25.04.21"),

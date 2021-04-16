@@ -33,7 +33,7 @@
         tools:layout="@layout/fragment_note_details">
         <argument
             android:name="note"
-            app:argType="io.techmeskills.an02onl_plannerapp.screen.main.Note"
+            app:argType="io.techmeskills.an02onl_plannerapp.data.Note"
             app:nullable="true"/>
     </fragment>
 </navigation>

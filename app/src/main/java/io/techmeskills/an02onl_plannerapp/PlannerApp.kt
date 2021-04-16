@@ -1,9 +1,8 @@
 package io.techmeskills.an02onl_plannerapp
 
 import android.app.Application
-import android.view.Window
+import io.techmeskills.an02onl_plannerapp.data.db.NotesDatabase
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
-import io.techmeskills.an02onl_plannerapp.screen.main.TaskModel
 import io.techmeskills.an02onl_plannerapp.screen.splash.SplashViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
@@ -16,13 +15,17 @@ class PlannerApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@PlannerApp)
-            modules(listOf(viewModels))
+            modules(listOf(viewModels, databaseModule))
         }
     }
 
     private val viewModels = module {
         viewModel { SplashViewModel() }
-        viewModel { MainViewModel() }
-        viewModel { TaskModel() }
+        viewModel { MainViewModel(get()) }
+    }
+
+    private val databaseModule = module {
+        single { NotesDatabase.buildDatabase(get()) }
+        factory { get<NotesDatabase>().notesDao() }
     }
 }

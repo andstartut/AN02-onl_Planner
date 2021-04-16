@@ -2,7 +2,6 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
-import io.techmeskills.an02onl_plannerapp.screen.noteDetails.NoteDetailsFragment
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.NotesAdapter as NotesAdapter
@@ -26,9 +24,6 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             view?.findNavController()?.navigate(
                 MainFragmentDirections.actionMainFragmentToNoteDetailsFragment(note)
             )
-        },
-        onDelete = {int -> 
-            viewModel.deleteNote(int)
         }
     )
 
@@ -41,7 +36,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
         viewBinding.recyclerView.adapter = adapter
 
-        viewModel.data.observe(viewLifecycleOwner) {
+        val swipeHandler = object : SwipeToDeleteCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewModel.deleteNote(adapter.currentList[viewHolder.adapterPosition])
+            }
+        }
+        ItemTouchHelper(swipeHandler).attachToRecyclerView(viewBinding.recyclerView)
+
+        viewModel.data.observe(this.viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
@@ -51,25 +53,6 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     MainFragmentDirections.actionMainFragmentToNoteDetailsFragment(null)
                 )
         }
-
-        setFragmentResultListener(NoteDetailsFragment.NOTE_RESULT) { key, bundle ->
-            bundle.getParcelable<Note>(NoteDetailsFragment.NOTE)?.let {
-                if (it.id <= NoteDetailsFragment.NEW_NOTE_INDEX) {
-                    viewModel.addNote(it)
-                } else {
-                    viewModel.editNote(it)
-                }
-            }
-//            viewBinding.recyclerView.adapter?.notifyDataSetChanged()
-        }
-
-        val swipeHandler = object : SwipeToDeleteCallback() {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                adapter.removeAt(viewHolder.adapterPosition)
-            }
-        }
-        val itemTouchHelper = ItemTouchHelper(swipeHandler)
-        itemTouchHelper.attachToRecyclerView(viewBinding.recyclerView)
     }
 }
 
