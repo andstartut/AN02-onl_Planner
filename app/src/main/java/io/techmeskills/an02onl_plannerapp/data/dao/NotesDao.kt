@@ -23,4 +23,7 @@ abstract class NotesDao {
 
     @Query("SELECT * FROM notes")
     abstract fun getAllNotesLifeData(): LiveData<List<Note>>
+
+    @Query("SELECT * FROM notes WHERE accountName = :accountName")
+    abstract fun getAccountNotesLifeData(accountName: String): LiveData<List<Note>>
 }

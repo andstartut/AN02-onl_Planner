@@ -7,5 +7,7 @@
     <string name="confirm">Confirm</string>
     <string name="toolbar_addNew">Add new note</string>
     <string name="toolbar_editNote">Edit note</string>
-    <string name="toolbar">Planner App</string>
+    <string name="toolbar_login">Login</string>
+    <string name="toolbar_main">Planner App</string>
+    <string name="login">Login</string>
 </resources>

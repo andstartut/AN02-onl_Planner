@@ -14,6 +14,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.jhonnyx2012.horizontalpicker.DatePickerListener
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.data.Note
+import io.techmeskills.an02onl_plannerapp.data.PersistentStorage
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
@@ -38,6 +39,8 @@ class NoteDetailsFragment :
     private val args: NoteDetailsFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val persistentStorage = PersistentStorage(this.requireContext())
 
         dataPickerInit()
 
@@ -69,6 +72,7 @@ class NoteDetailsFragment :
                     viewModel.editNote(
                         Note(
                             id = it.id,
+                            accountName = it.accountName,
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )
@@ -76,6 +80,8 @@ class NoteDetailsFragment :
                 } ?: kotlin.run {
                     viewModel.addNote(
                         Note(
+                            //Может не работать
+                            accountName = persistentStorage.getAccountName(),
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )

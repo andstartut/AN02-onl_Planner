@@ -37,9 +37,11 @@ abstract class SwipeToDeleteCallback(context: MainFragment) : ItemTouchHelper.Si
         val itemHeight = itemView.bottom - itemView.top
 
         val iconTop = itemView.top + (itemHeight - intrinsicHeight) / 2
-        val iconMargin = (itemHeight - intrinsicHeight) / 2
-        val iconLeft = itemView.right - iconMargin - intrinsicWidth
+        val iconMargin = (itemHeight - intrinsicHeight) / 5
+        val iconLeft = itemView.right - intrinsicWidth - iconMargin
         val iconRight = itemView.right - iconMargin
+//        val iconLeft = itemView.right - iconMargin - intrinsicWidth
+//        val iconRight = itemView.right - iconMargin
         val iconBottom = iconTop + intrinsicHeight
 
 

@@ -13,45 +13,62 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/toolbar_addNew"
+        app:title="@string/toolbar_login"
         app:titleTextColor="@color/white" />
 
-    <EditText
-        android:id="@+id/etTypeNote"
-        android:layout_width="match_parent"
+
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:minHeight="50dp"
-        android:maxHeight="200dp"
-        android:gravity="center"
-        android:background="@drawable/edittext_border"
-        android:textSize="18dp"
-        android:hint="@string/hint_in_etTypeNote"
-        android:importantForAutofill="no"
-        android:inputType="textCapSentences"
-        app:layout_constraintBottom_toTopOf="@id/datePicker"
+        android:layout_marginTop="10dp"
+        android:text="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.github.jhonnyx2012.horizontalpicker.HorizontalPicker
-        android:id="@+id/datePicker"
+    <EditText
+        android:id="@+id/etTypeAccountName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
+        android:layout_margin="4dp"
+        android:background="@drawable/edittext_border"
+        android:gravity="center"
+        android:hint="@string/hint_in_etTypeNote"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxHeight="200dp"
+        android:minHeight="50dp"
+        android:textSize="18dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etTypeNote" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 
     <Button
-        android:id="@id/btnConfirm"
+        android:id="@+id/btnConfirmNewAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/confirm"
         android:layout_marginTop="10dp"
+        android:text="@string/confirm"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/datePicker"/>
+        app:layout_constraintTop_toBottomOf="@id/etTypeAccountName" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/add"
+        android:src="@drawable/ic_add"
+        android:theme="@style/FAB"
+        app:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
