@@ -12,13 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.snackbar.Snackbar
 import io.techmeskills.an02onl_plannerapp.R
-import io.techmeskills.an02onl_plannerapp.data.PersistentStorage
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.ArrayList
-import io.techmeskills.an02onl_plannerapp.screen.main.NotesAdapter as NotesAdapter
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
 
@@ -34,7 +31,6 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         }
     )
 
-
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
         viewBinding.toolbar.setPadding(0, 0, 0, 0)
     }
@@ -42,28 +38,26 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val persistentStorage = PersistentStorage(this.requireContext())
-
         viewBinding.recyclerView.adapter = adapter
-
-        val adapterSpinner =
-            ArrayAdapter(this.requireContext(), android.R.layout.simple_spinner_item, viewModel.accountsList)
-        viewBinding.spinner.adapter = adapterSpinner
-        viewBinding.spinner.setSelection(adapterSpinner.getPosition(persistentStorage.getAccountName()))
+        viewModel.accountsLiveData.observe(this.viewLifecycleOwner) { accountsList ->
+            val adapterSpinner = ArrayAdapter(
+                this.requireContext(), android.R.layout.simple_spinner_item, accountsList
+            )
+            adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            viewBinding.spinner.adapter = adapterSpinner
+            //viewBinding.spinner.setSelection(adapterSpinner.getPosition(viewModel.lastAccountName))
+        }
         viewBinding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                persistentStorage.setAccountName(viewBinding.spinner.selectedItem.toString())
-                viewModel.updateLiveData(viewBinding.spinner.selectedItem.toString())
+                viewModel.changeAccount(viewBinding.spinner.selectedItem.toString())
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
             }
-
         }
 
-        viewModel.data?.observe(this.viewLifecycleOwner) {
+        viewModel.currentAccountNotesLiveData.observe(this.viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
@@ -82,13 +76,13 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
         viewBinding.btnAddNew.setOnClickListener {
             findNavController()
-                .navigate(
+                .navigateSafe(
                     MainFragmentDirections.toNoteDetailsFragment(null)
                 )
         }
 
         viewBinding.btnAccountSetting.setOnClickListener {
-            findNavController().navigateSafe(MainFragmentDirections.toLoginFragment())
+            findNavController().navigateSafe(MainFragmentDirections.toAccountSettingsFragment())
         }
     }
 }

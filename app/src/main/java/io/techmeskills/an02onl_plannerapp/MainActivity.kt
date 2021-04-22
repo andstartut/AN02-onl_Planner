@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import io.techmeskills.an02onl_plannerapp.data.PersistentStorage
 import io.techmeskills.an02onl_plannerapp.databinding.ActivityMainBinding
 import io.techmeskills.an02onl_plannerapp.support.SupportActivityInset
 import io.techmeskills.an02onl_plannerapp.support.setWindowTransparency
@@ -18,8 +17,6 @@ class MainActivity : SupportActivityInset<ActivityMainBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //кастылик для первого запуска
-        PersistentStorage(this).setAccountName("User1")
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         setWindowTransparency(this)

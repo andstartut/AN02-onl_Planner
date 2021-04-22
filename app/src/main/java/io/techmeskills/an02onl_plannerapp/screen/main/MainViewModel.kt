@@ -1,69 +1,56 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
-import android.content.Context
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.map
-import io.techmeskills.an02onl_plannerapp.data.Note
-import io.techmeskills.an02onl_plannerapp.data.PersistentStorage
-import io.techmeskills.an02onl_plannerapp.data.dao.NotesDao
+import androidx.lifecycle.asLiveData
+import io.techmeskills.an02onl_plannerapp.database.model.Note
+import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
+import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.koin.dsl.koinApplication
 
-class MainViewModel(private val notesDao: NotesDao, persistentStorage: PersistentStorage) : CoroutineViewModel() {
+class MainViewModel(private val noteRepository: NoteRepository, private val accountRepository: AccountRepository) :
+    CoroutineViewModel() {
 
-    var data = notesDao.getAccountNotesLifeData(persistentStorage.getAccountName()!!)
+    init {
+        accountRepository.getCurrentAccountNameFlow().map {
+            //lastAccountName = it
+        }
+    }
+    var lastAccountName: String? = null
 
-    val accountsList = listOf(
-        "User1",
-        "User2"
-    )
+    val currentAccountNotesLiveData = noteRepository.currentAccountNotesFlow.asLiveData()
 
-//    val noteList = listOf(
-//        Note(0, "Помыть посуду", null),
-//        Note(1, "Забрать пальто из химчистки", "23.03.2021"),
-//        Note(2, "Позвонить Ибрагиму", null),
-//        Note(3, "Заказать перламутровые пуговицы", null),
-//        Note(4, "Избить соседа за шум ночью", null),
-//        Note(5, "Выпить на неделе с Володей", "22.03.2021"),
-//        Note(6, "Починить кран", null),
-//        Note(7, "Выбить ковры перед весной", null),
-//        Note(8, "Заклеить сапог жене", null),
-//        Note(9, "Купить картошки", null),
-//        Note(10, "Скачать кино в самолёт", "25.03.2021")
-//    )
+    val accountsLiveData = accountRepository.getAllAccountsFlow().asLiveData()
 
-    fun updateLiveData(accountName: String) {
-        data = notesDao.getAccountNotesLifeData(accountName)
+
+    fun changeAccount(name: String) {
+        launch {
+            accountRepository.switchBetweenAccountsByName(name)
+        }
     }
 
     fun addNote(note: Note) {
         launch() {
-            notesDao.insertNote(note)
+            noteRepository.saveNote(note)
         }
     }
 
     fun editNote(note: Note) {
         launch() {
-            notesDao.updateNote(note)
-        }
-    }
-
-    fun deleteNote(note: Note) {
-        launch() {
-            notesDao.deleteNote(note)
+            noteRepository.updateNote(note)
         }
     }
 
     fun deleteWithUndo(note: Note, callback: (Note) -> Unit) {
-        val copy = Note(
+        val noteCopy = Note(
             id = note.id,
-            accountName = note.accountName,
             title = note.title,
-            date = note.date
+            date = note.date,
+            accountId = note.accountId,
         )
-        deleteNote(note)
-        callback(copy)
+        launch() {
+            noteRepository.deleteNote(note)
+        }
+        callback(noteCopy)
     }
 }

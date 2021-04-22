@@ -13,8 +13,7 @@ import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.jhonnyx2012.horizontalpicker.DatePickerListener
 import io.techmeskills.an02onl_plannerapp.R
-import io.techmeskills.an02onl_plannerapp.data.Note
-import io.techmeskills.an02onl_plannerapp.data.PersistentStorage
+import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
@@ -39,14 +38,13 @@ class NoteDetailsFragment :
     private val args: NoteDetailsFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        val persistentStorage = PersistentStorage(this.requireContext())
+        super.onViewCreated(view, savedInstanceState)
 
         dataPickerInit()
 
         fun stringToDate(): DateTime? {
             return if (!args.note!!.date.isNullOrBlank()) {
-                DateTime(dateFormatter.parse(args.note!!.date)?.time)
+                DateTime(dateFormatter.parse(args.note?.date)?.time)
             } else {
                 null
             }
@@ -72,7 +70,7 @@ class NoteDetailsFragment :
                     viewModel.editNote(
                         Note(
                             id = it.id,
-                            accountName = it.accountName,
+                            accountId = it.accountId,
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )
@@ -80,8 +78,7 @@ class NoteDetailsFragment :
                 } ?: kotlin.run {
                     viewModel.addNote(
                         Note(
-                            //Может не работать
-                            accountName = persistentStorage.getAccountName(),
+                            accountId = -1L,
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )
