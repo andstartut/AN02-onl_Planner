@@ -36,7 +36,7 @@
     <fragment
         android:id="@+id/NewAccountFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.account.NewAccountFragment"
-        android:label="new_account_fragment"
+        android:label="NewAccountFragment"
         tools:layout="@layout/fragment_new_account">
         <action
             android:id="@+id/toMainFragment"
@@ -44,7 +44,11 @@
         <argument
             android:name="etNewAccount"
             app:argType="string"
-            app:nullable="true"/>
+            app:nullable="true" />
+        <argument
+            android:name="tbNewAccount"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/noteDetailFragment"
@@ -59,8 +63,8 @@
     <fragment
         android:id="@+id/accountSettingsFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.account.AccountSettingsFragment"
-        android:label="fragment_account_settings"
-        tools:layout="@layout/fragment_account_settings" >
+        android:label="AccountSettingsFragment"
+        tools:layout="@layout/fragment_account_settings">
         <action
             android:id="@+id/toNewAccountFragment"
             app:destination="@id/NewAccountFragment" />

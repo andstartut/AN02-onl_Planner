@@ -11,5 +11,6 @@ open class Note(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val title: String,
     val date: String?,
-    val accountId: Long
+    val accountId: Long,
+    val cloudSync: Boolean = false
 ) : Parcelable

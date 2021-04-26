@@ -1,15 +1,18 @@
 package io.techmeskills.an02onl_plannerapp.database.repository
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.provider.Settings.Secure
 import io.techmeskills.an02onl_plannerapp.database.dao.AccountsDao
 import io.techmeskills.an02onl_plannerapp.database.model.Account
 import io.techmeskills.an02onl_plannerapp.datastore.Settings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
-class AccountRepository(private val accountsDao: AccountsDao, private val dataStore: Settings) {
+class AccountRepository(private val accountsDao: AccountsDao, private val dataStore: Settings, context: Context) {
+
+    @SuppressLint("HardwareIds")
+    val phoneId: String = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
 
     suspend fun createAccount(name: String) {
         withContext(Dispatchers.IO) {
@@ -29,40 +32,34 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
             it.isNotEmpty()
         }.flowOn(Dispatchers.IO)
 
-    fun getAllAccountsFlow(): Flow<List<String>> {
-        return accountsDao.getAllAccountsFlow()
+    fun getAllAccountsNameFlow(): Flow<List<String>> {
+        return accountsDao.getAllAccountsNameFlow()
     }
 
-    fun getCurrentAccountNameFlow(): Flow<String> {
-        return dataStore.accountIdFlow().map {
-            accountsDao.getAccountName(it)
-        }.flowOn(Dispatchers.IO)
-    }
-
-    suspend fun switchBetweenAccountsByName(name: String) {
+    suspend fun switchBetweenAccountsByName(name: String, position: Int) {
         withContext(Dispatchers.IO) {
             dataStore.saveAccountId(accountsDao.getAccountId(name))
+            dataStore.saveAccountPos(position)
         }
+    }
+
+    fun spinnerData() = accountsDao.getAllAccountsNameFlow().combine(
+        getCurrentAccountPosition()
+    ) { list, accountPos ->
+        list to accountPos
     }
 
     fun getCurrentAccountFlow(): Flow<Account> {
-        return dataStore.accountIdFlow().map {
-            accountsDao.getAccount(it)
-        }.flowOn(Dispatchers.IO)
+        return dataStore.getAccountIdFlow().flatMapLatest {
+            accountsDao.getAccountFlow(it)
+        }
     }
 
-    suspend fun updateCurrentAccountName(newName: String) {
-        withContext(Dispatchers.IO) {
-            dataStore.saveAccountId(accountsDao.getAccountId(newName))
-            dataStore.accountIdFlow().map {
-                val currentAccount = accountsDao.getAccount(it)
-                accountsDao.updateAccount(
-                    Account(
-                        id = currentAccount.id,
-                        name = newName
-                    )
-                )
-            }
-        }
+    fun updateCurrentAccountName(newName: String, oldName: String) {
+        accountsDao.updateAccountName(newName, oldName)
+    }
+
+    fun getCurrentAccountPosition(): Flow<Int> {
+        return dataStore.getAccountPosFlow()
     }
 }

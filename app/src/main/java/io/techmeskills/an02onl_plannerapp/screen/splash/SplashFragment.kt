@@ -31,7 +31,10 @@ class SplashFragment : NavigationFragment<FragmentSplashBinding>(R.layout.fragme
                 }, 600)
             } else {
                 viewBinding.root.postDelayed({
-                    findNavController().navigateSafe(SplashFragmentDirections.toNewAccountFragment(null))
+                    findNavController().navigateSafe(SplashFragmentDirections.toNewAccountFragment(
+                        null,
+                        null
+                    ))
                 }, 600)
             }
         }

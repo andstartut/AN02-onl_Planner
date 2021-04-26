@@ -3,29 +3,25 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 import androidx.lifecycle.asLiveData
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
+import io.techmeskills.an02onl_plannerapp.database.repository.CloudRepository
 import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val noteRepository: NoteRepository, private val accountRepository: AccountRepository) :
+class MainViewModel(
+    private val noteRepository: NoteRepository,
+    private val accountRepository: AccountRepository,
+    private val cloudRepository: CloudRepository
+) :
     CoroutineViewModel() {
 
-    init {
-        accountRepository.getCurrentAccountNameFlow().map {
-            //lastAccountName = it
-        }
-    }
-    var lastAccountName: String? = null
+    val currentAccountNotesListLD = noteRepository.currentAccountNotesFlow.asLiveData()
 
-    val currentAccountNotesLiveData = noteRepository.currentAccountNotesFlow.asLiveData()
+    val spinnerDataLD = accountRepository.spinnerData().asLiveData()
 
-    val accountsLiveData = accountRepository.getAllAccountsFlow().asLiveData()
-
-
-    fun changeAccount(name: String) {
+    fun changeAccount(name: String, position: Int) {
         launch {
-            accountRepository.switchBetweenAccountsByName(name)
+            accountRepository.switchBetweenAccountsByName(name, position)
         }
     }
 
@@ -52,5 +48,17 @@ class MainViewModel(private val noteRepository: NoteRepository, private val acco
             noteRepository.deleteNote(note)
         }
         callback(noteCopy)
+    }
+
+    fun importNotes() {
+        launch {
+            cloudRepository.importNotes()
+        }
+    }
+
+    fun exportNotes() {
+        launch {
+            cloudRepository.exportNotes()
+        }
     }
 }

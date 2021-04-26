@@ -17,25 +17,39 @@
         app:title="@string/toolbar_main"
         app:titleTextColor="@color/white" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAccountSetting"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/baseline_account_circle_white_36"
+        app:elevation="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCloud"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/baseline_cloud_queue_white_36"
+        app:elevation="3dp"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toStartOf="@id/btnAccountSetting" />
+
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="40dp"
-        android:spinnerMode="dialog"
-        app:layout_constraintBottom_toTopOf="@id/recyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/btnAccountSetting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        android:background="@drawable/baseline_mode_edit_white_20"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/spinner_background"
+        android:ellipsize="marquee"
+        android:padding="8dp"
+        android:spinnerMode="dialog"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView"
+        app:layout_constraintEnd_toStartOf="@+id/btnCloud"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -49,6 +63,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:spanCount="2" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/piCircular"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="22dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/note_yellow_lite"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnAddNew"
