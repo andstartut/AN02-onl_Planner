@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
@@ -39,25 +40,28 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         super.onViewCreated(view, savedInstanceState)
 
         viewBinding.recyclerView.adapter = adapter
-        viewModel.accountsLiveData.observe(this.viewLifecycleOwner) { accountsList ->
+
+        viewModel.spinnerDataLD.observe(this.viewLifecycleOwner) {
+
             val adapterSpinner = ArrayAdapter(
-                this.requireContext(), android.R.layout.simple_spinner_item, accountsList
+                this.requireContext(), android.R.layout.simple_spinner_item, it.first
             )
             adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             viewBinding.spinner.adapter = adapterSpinner
-            //viewBinding.spinner.setSelection(adapterSpinner.getPosition(viewModel.lastAccountName))
+            viewBinding.spinner.setSelection(it.second)
         }
+
         viewBinding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                viewModel.changeAccount(viewBinding.spinner.selectedItem.toString())
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, positionInList: Int, p3: Long) {
+                viewModel.changeAccount(viewBinding.spinner.selectedItem.toString(), positionInList)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
         }
 
-        viewModel.currentAccountNotesLiveData.observe(this.viewLifecycleOwner) {
+        viewModel.currentAccountNotesListLD.observe(this.viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
@@ -84,6 +88,25 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewBinding.btnAccountSetting.setOnClickListener {
             findNavController().navigateSafe(MainFragmentDirections.toAccountSettingsFragment())
         }
+
+        viewBinding.btnCloud.setOnClickListener {
+            showCloudDialog()
+        }
+    }
+
+    private fun showCloudDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Chose your destiny")
+            .setMessage("What do you want to do with your notes?")
+            .setPositiveButton("Import") { dialog, _ ->
+//                viewBinding.piCircular.isVisible = true
+                viewModel.importNotes()
+                dialog.cancel()
+            }.setNegativeButton("Export") { dialog, _ ->
+//                viewBinding.piCircular.isVisible = true
+                viewModel.exportNotes()
+                dialog.cancel()
+            }.show()
     }
 }
 

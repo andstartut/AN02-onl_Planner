@@ -26,4 +26,8 @@ abstract class NotesDao {
 
     @Query("SELECT * FROM notes WHERE accountId == :accountId")
     abstract fun getAllAccountNotesFlow(accountId: Long): Flow<List<Note>>
+
+
+    @Query("UPDATE notes SET cloudSync = 1")
+    abstract fun setAllNotesSyncWithCloud()
 }

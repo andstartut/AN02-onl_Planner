@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -24,35 +25,50 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.currentAccountNameLiveData.observe(this.viewLifecycleOwner) {
-            viewBinding.tvName.text = it
+        viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
+            viewBinding.tvName.text = it.name
         }
 
         viewBinding.btnCreate.setOnClickListener {
-            findNavController().navigateSafe(AccountSettingsFragmentDirections.toNewAccountFragment("New account"))
+            findNavController().navigateSafe(
+                AccountSettingsFragmentDirections.toNewAccountFragment(
+                    tbNewAccount = TOOLBAR_NEW_ACCOUNT,
+                    etNewAccount = TEXTVIEW_NEW_ACCOUNT,
+                )
+            )
         }
 
         viewBinding.btnEdit.setOnClickListener {
             if (viewBinding.etTypeAccountName.isVisible.not()) {
-                viewBinding.btnCreate.isEnabled = false
+                viewBinding.btnCreate.visibility = View.GONE
+                viewBinding.btnDelete.visibility = View.GONE
 
-                viewModel.currentAccountNameLiveData.observe(this.viewLifecycleOwner) {
-                    viewBinding.etTypeAccountName.setText(it, TextView.BufferType.EDITABLE)
+                viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
+                    viewBinding.etTypeAccountName.setText(it.name, TextView.BufferType.EDITABLE)
                 }
 
                 viewBinding.etTypeAccountName.visibility = View.VISIBLE
                 viewBinding.etTypeAccountName.requestFocus()
                 viewBinding.etTypeAccountName.setSelection(viewBinding.etTypeAccountName.text.toString().length)
-                val inputMethodManager = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+                val inputMethodManager =
+                    view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.toggleSoftInput(
+                    InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_IMPLICIT_ONLY
+                )
                 viewBinding.btnEdit.text = getString(R.string.bt_confirm)
             } else {
+                if (viewBinding.etTypeAccountName.text.toString().isNullOrEmpty().not()) {
+                    viewModel.changeAccountName(viewBinding.etTypeAccountName.text.toString())
 
-                viewModel.changeAccountName(viewBinding.etTypeAccountName.text.toString())
+                    viewBinding.btnEdit.text = getString(R.string.bt_edit)
+                    viewBinding.etTypeAccountName.visibility = View.GONE
+                    viewBinding.btnCreate.visibility = View.VISIBLE
+                    viewBinding.btnDelete.visibility = View.VISIBLE
+                } else {
+                    Toast.makeText(requireContext(), "Please, enter your name", Toast.LENGTH_LONG).show()
+                }
 
-                viewBinding.btnEdit.text = getString(R.string.bt_edit)
-                viewBinding.etTypeAccountName.visibility = View.GONE
-                viewBinding.btnCreate.isEnabled = true
             }
         }
     }
@@ -66,4 +82,10 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                 findNavController().popBackStack()
             }
         }
+
+    companion object {
+        const val TEXTVIEW_NEW_ACCOUNT = "Create new account:"
+        const val TOOLBAR_NEW_ACCOUNT = "New account"
+
+    }
 }
