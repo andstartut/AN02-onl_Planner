@@ -3,32 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fafafa">
+    android:background="#f5f5f5">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/alfa_corso"
+        android:layout_height="70dp"
+        android:background="@color/note_brown_lite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/Add"
+        app:title="@string/toolbar_addNew"
         app:titleTextColor="@color/white" />
 
     <EditText
         android:id="@+id/etTypeNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:minHeight="50dp"
+        android:layout_margin="10dp"
+        android:minHeight="100dp"
         android:maxHeight="200dp"
         android:gravity="center"
-        android:background="@drawable/edittext_border"
+        android:background="@drawable/edittext_background"
         android:textSize="18dp"
         android:hint="@string/hint_in_etTypeNote"
         android:importantForAutofill="no"
         android:inputType="textCapSentences"
+        android:cursorVisible="true"
+        android:textCursorDrawable="@drawable/cursor_background"
+        android:elevation="1dp"
         app:layout_constraintBottom_toTopOf="@id/datePicker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,20 +41,23 @@
         android:id="@+id/datePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
+        android:elevation="1dp"
         app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/etTypeNote" />
 
-    <Button
-        android:id="@id/btnConfirm"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/confirm"
         android:layout_marginTop="10dp"
+        android:padding="20dp"
+        android:text="@string/bt_confirm"
+        app:backgroundTint="@color/note_yellow_rich"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/datePicker"/>
+        app:layout_constraintTop_toBottomOf="@id/datePicker" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

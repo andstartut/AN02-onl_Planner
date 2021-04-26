@@ -2,17 +2,20 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResultListener
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
-import io.techmeskills.an02onl_plannerapp.screen.noteDetails.NoteDetailsFragment
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
+import io.techmeskills.an02onl_plannerapp.support.navigateSafe
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import io.techmeskills.an02onl_plannerapp.screen.main.NotesAdapter as NotesAdapter
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
 
@@ -23,11 +26,8 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     private val adapter = NotesAdapter(
         onClick = { note ->
             view?.findNavController()?.navigate(
-                MainFragmentDirections.actionMainFragmentToNoteDetailsFragment(note)
+                MainFragmentDirections.toNoteDetailsFragment(note)
             )
-        },
-        onDelete = {
-            viewModel.deleteNote(it)
         }
     )
 
@@ -39,27 +39,50 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         super.onViewCreated(view, savedInstanceState)
 
         viewBinding.recyclerView.adapter = adapter
+        viewModel.accountsLiveData.observe(this.viewLifecycleOwner) { accountsList ->
+            val adapterSpinner = ArrayAdapter(
+                this.requireContext(), android.R.layout.simple_spinner_item, accountsList
+            )
+            adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            viewBinding.spinner.adapter = adapterSpinner
+            //viewBinding.spinner.setSelection(adapterSpinner.getPosition(viewModel.lastAccountName))
+        }
+        viewBinding.spinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                viewModel.changeAccount(viewBinding.spinner.selectedItem.toString())
+            }
 
-        viewModel.data.observe(viewLifecycleOwner) {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
+
+        viewModel.currentAccountNotesLiveData.observe(this.viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
+        val swipeHandler = object : SwipeToDeleteCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                viewModel.deleteWithUndo(adapter.currentList[viewHolder.adapterPosition]) { note ->
+                    Snackbar.make(view, "Note removed", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO", View.OnClickListener {
+                            viewModel.addNote(note)
+                        })
+                        .show()
+                }
+            }
+        }
+        ItemTouchHelper(swipeHandler).attachToRecyclerView(viewBinding.recyclerView)
+
         viewBinding.btnAddNew.setOnClickListener {
             findNavController()
-                .navigate(
-                    MainFragmentDirections.actionMainFragmentToNoteDetailsFragment(null)
+                .navigateSafe(
+                    MainFragmentDirections.toNoteDetailsFragment(null)
                 )
         }
 
-        setFragmentResultListener(NoteDetailsFragment.NOTE_RESULT) { key, bundle ->
-            bundle.getParcelable<Note>(NoteDetailsFragment.NOTE)?.let {
-                if (it.id <= NoteDetailsFragment.NEW_NOTE_INDEX) {
-                    viewModel.addNote(it)
-                } else {
-                    viewModel.editNote(it)
-                }
-            }
-//            viewBinding.recyclerView.adapter?.notifyDataSetChanged()
+        viewBinding.btnAccountSetting.setOnClickListener {
+            findNavController().navigateSafe(MainFragmentDirections.toAccountSettingsFragment())
         }
     }
 }

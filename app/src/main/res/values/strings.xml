@@ -1,11 +1,22 @@
 <resources>
     <string name="app_name">AN02ONL_PlannerApp</string>
     <string name="welcome">Welcome</string>
-    <string name="hint_in_etTypeNote">Type your note here</string>
-    <string name="send">Send</string>
-    <string name="add">ADD</string>
-    <string name="confirm">Confirm</string>
+    <string name="hint_in_etTypeNote">Type your note</string>
+    <string name="hint_in_etTypeName">Please, enter your name</string>
+    <string name="bt_send">Send</string>
+    <string name="bt_add">ADD</string>
+    <string name="bt_login">Login</string>
+    <string name="bt_confirm">Confirm</string>
+    <string name="bt_create">Create</string>
+    <string name="bt_createNew">Create new</string>
+    <string name="bt_delete">Delete</string>
+    <string name="bt_edit">Edit</string>
     <string name="toolbar_addNew">Add new note</string>
     <string name="toolbar_editNote">Edit note</string>
-    <string name="toolbar">Planner App</string>
+    <string name="toolbar_accountsSettings">Accounts settings</string>
+    <string name="toolbar_welcome">Welcome</string>
+    <string name="toolbar_main">Planner App</string>
+    <string name="tv_welcomeTitle">Hi!\nBefore we start, let\'s create a new account</string>
+    <string name="tv_addNewAccount">Add new account:</string>
+    <string name="tv_yourAccountName">Your name:</string>
 </resources>

@@ -15,16 +15,36 @@
             app:destination="@+id/mainFragment"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/toNewAccountFragment"
+            app:destination="@id/NewAccountFragment"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
-
     <fragment
         android:id="@+id/mainFragment"
         android:name="io.techmeskills.an02onl_plannerapp.screen.main.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/fragment_main">
         <action
-            android:id="@+id/action_mainFragment_to_noteDetailsFragment"
+            android:id="@+id/toNoteDetailsFragment"
             app:destination="@id/noteDetailFragment" />
+        <action
+            android:id="@+id/toAccountSettingsFragment"
+            app:destination="@id/accountSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/NewAccountFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.account.NewAccountFragment"
+        android:label="new_account_fragment"
+        tools:layout="@layout/fragment_new_account">
+        <action
+            android:id="@+id/toMainFragment"
+            app:destination="@id/mainFragment" />
+        <argument
+            android:name="etNewAccount"
+            app:argType="string"
+            app:nullable="true"/>
     </fragment>
     <fragment
         android:id="@+id/noteDetailFragment"
@@ -33,7 +53,16 @@
         tools:layout="@layout/fragment_note_details">
         <argument
             android:name="note"
-            app:argType="io.techmeskills.an02onl_plannerapp.screen.main.Note"
-            app:nullable="true"/>
+            app:argType="io.techmeskills.an02onl_plannerapp.database.model.Note"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountSettingsFragment"
+        android:name="io.techmeskills.an02onl_plannerapp.screen.account.AccountSettingsFragment"
+        android:label="fragment_account_settings"
+        tools:layout="@layout/fragment_account_settings" >
+        <action
+            android:id="@+id/toNewAccountFragment"
+            app:destination="@id/NewAccountFragment" />
     </fragment>
 </navigation>

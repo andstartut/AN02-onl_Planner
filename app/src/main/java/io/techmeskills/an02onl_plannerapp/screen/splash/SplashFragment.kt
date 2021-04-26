@@ -8,6 +8,7 @@ import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentSplashBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
+import kotlinx.coroutines.flow.first
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashFragment : NavigationFragment<FragmentSplashBinding>(R.layout.fragment_splash) {
@@ -22,9 +23,17 @@ class SplashFragment : NavigationFragment<FragmentSplashBinding>(R.layout.fragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewBinding.root.postDelayed({
-            findNavController().navigateSafe(SplashFragmentDirections.toMainFragment())
-        }, 600)
-    }
 
+        viewModel.checkAnyAccountExistLiveData.observe(this.viewLifecycleOwner) {
+            if (it) {
+                viewBinding.root.postDelayed({
+                    findNavController().navigateSafe(SplashFragmentDirections.toMainFragment())
+                }, 600)
+            } else {
+                viewBinding.root.postDelayed({
+                    findNavController().navigateSafe(SplashFragmentDirections.toNewAccountFragment(null))
+                }, 600)
+            }
+        }
+    }
 }
