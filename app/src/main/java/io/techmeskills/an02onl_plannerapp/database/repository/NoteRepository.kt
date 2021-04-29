@@ -48,6 +48,16 @@ class NoteRepository(private val notesDao: NotesDao, private val dataStore: Sett
         }
     }
 
+    suspend fun deleteAllAccountNotes(accountId: Long) {
+        withContext(Dispatchers.IO) {
+            notesDao.deleteNotesById(accountId)
+        }
+    }
+
+    suspend fun deleteNotesById(accountId: Long) {
+        notesDao.deleteNotesById(accountId)
+    }
+
     suspend fun setAllNotesSyncWithCloud() {
         withContext(Dispatchers.IO) {
             notesDao.setAllNotesSyncWithCloud()

@@ -1,11 +1,15 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
 import io.techmeskills.an02onl_plannerapp.database.repository.CloudRepository
 import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -17,7 +21,9 @@ class MainViewModel(
 
     val currentAccountNotesListLD = noteRepository.currentAccountNotesFlow.asLiveData()
 
-    val spinnerDataLD = accountRepository.spinnerData().asLiveData()
+    val spinnerDataLD = accountRepository.spinnerData().buffer(Channel.RENDEZVOUS).asLiveData()
+
+    var cloudResultLD = MutableLiveData<Boolean>()
 
     fun changeAccount(name: String, position: Int) {
         launch {
@@ -50,15 +56,19 @@ class MainViewModel(
         callback(noteCopy)
     }
 
+    @ExperimentalCoroutinesApi
     fun importNotes() {
         launch {
-            cloudRepository.importNotes()
+            val importNotes = cloudRepository.importNotes()
+            cloudResultLD.postValue(importNotes)
         }
     }
 
+    @ExperimentalCoroutinesApi
     fun exportNotes() {
         launch {
-            cloudRepository.exportNotes()
+            val exportNotes = cloudRepository.exportNotes()
+            cloudResultLD.postValue(exportNotes)
         }
     }
 }

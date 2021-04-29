@@ -19,6 +19,7 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
             if (isAccountExists(name).not()) {
                 accountsDao.addAccount(Account(name = name))
                 dataStore.saveAccountId(accountsDao.getAccountId(name))
+                dataStore.saveAccountPos(dataStore.getAccountPos())
             }
         }
     }
@@ -31,10 +32,6 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
         accountsDao.getAllAccountsFlow().map {
             it.isNotEmpty()
         }.flowOn(Dispatchers.IO)
-
-    fun getAllAccountsNameFlow(): Flow<List<String>> {
-        return accountsDao.getAllAccountsNameFlow()
-    }
 
     suspend fun switchBetweenAccountsByName(name: String, position: Int) {
         withContext(Dispatchers.IO) {
@@ -49,7 +46,8 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
         list to accountPos
     }
 
-    fun getCurrentAccountFlow(): Flow<Account> {
+    @ExperimentalCoroutinesApi
+    fun getCurrentAccountFlow(): Flow<Account?> {
         return dataStore.getAccountIdFlow().flatMapLatest {
             accountsDao.getAccountFlow(it)
         }
@@ -61,5 +59,18 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
 
     fun getCurrentAccountPosition(): Flow<Int> {
         return dataStore.getAccountPosFlow()
+    }
+
+    @ExperimentalCoroutinesApi
+    suspend fun deleteAccount() {
+        accountsDao.deleteAccount(getCurrentAccountFlow().first()!!)
+        if (checkAnyAccountExist().first()) {
+            dataStore.saveAccountPos(FIRST_POSITION)
+            dataStore.saveAccountId(accountsDao.getAllAccountsFlow().first()[FIRST_POSITION].id)
+        }
+    }
+
+    companion object {
+        const val FIRST_POSITION = 0
     }
 }

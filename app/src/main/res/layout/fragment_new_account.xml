@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/toolbar_welcome"
+        app:title="@string/welcome"
         app:titleTextColor="@color/white" />
 
     <TextView
@@ -41,7 +41,7 @@
         android:maxHeight="60dp"
         android:background="@drawable/edittext_background"
         android:textSize="18sp"
-        android:hint="@string/hint_in_etTypeName"
+        android:hint="@string/please_enter_your_name"
         android:cursorVisible="true"
         android:textCursorDrawable="@drawable/cursor_background"
         android:elevation="1dp"
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:padding="20dp"
-        android:text="@string/bt_create"
+        android:text="@string/create"
         app:backgroundTint="@color/note_yellow_rich"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

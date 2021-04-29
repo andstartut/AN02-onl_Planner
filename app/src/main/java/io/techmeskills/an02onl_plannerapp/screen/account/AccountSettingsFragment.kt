@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentAccountSettingsBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
@@ -26,16 +27,27 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
-            viewBinding.tvName.text = it.name
+            viewBinding.tvName.text = it?.name
+        }
+
+        viewModel.checkAnyAccountExist.observe(this.viewLifecycleOwner) { isAccountListNotEmpty ->
+            if (isAccountListNotEmpty.not()) {
+                findNavController().navigateSafe(
+                    AccountSettingsFragmentDirections.toNewAccountFragment(
+                        tbNewAccount = getString(R.string.create_new),
+                        etNewAccount = getString(R.string.create_new_account),
+                    )
+                )
+            }
         }
 
         viewBinding.btnCreate.setOnClickListener {
             findNavController().navigateSafe(
-                AccountSettingsFragmentDirections.toNewAccountFragment(
-                    tbNewAccount = TOOLBAR_NEW_ACCOUNT,
-                    etNewAccount = TEXTVIEW_NEW_ACCOUNT,
-                )
+            AccountSettingsFragmentDirections.toNewAccountFragment(
+                tbNewAccount = getString(R.string.create_new),
+                etNewAccount = getString(R.string.create_new_account),
             )
+        )
         }
 
         viewBinding.btnEdit.setOnClickListener {
@@ -44,7 +56,7 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                 viewBinding.btnDelete.visibility = View.GONE
 
                 viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
-                    viewBinding.etTypeAccountName.setText(it.name, TextView.BufferType.EDITABLE)
+                    viewBinding.etTypeAccountName.setText(it!!.name, TextView.BufferType.EDITABLE)
                 }
 
                 viewBinding.etTypeAccountName.visibility = View.VISIBLE
@@ -56,21 +68,39 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                     InputMethodManager.SHOW_FORCED,
                     InputMethodManager.HIDE_IMPLICIT_ONLY
                 )
-                viewBinding.btnEdit.text = getString(R.string.bt_confirm)
+                viewBinding.btnEdit.text = getString(R.string.confirm)
             } else {
-                if (viewBinding.etTypeAccountName.text.toString().isNullOrEmpty().not()) {
+                if (viewBinding.etTypeAccountName.text.toString().isEmpty().not()) {
                     viewModel.changeAccountName(viewBinding.etTypeAccountName.text.toString())
 
-                    viewBinding.btnEdit.text = getString(R.string.bt_edit)
+                    viewBinding.btnEdit.text = getString(R.string.edit)
                     viewBinding.etTypeAccountName.visibility = View.GONE
                     viewBinding.btnCreate.visibility = View.VISIBLE
                     viewBinding.btnDelete.visibility = View.VISIBLE
                 } else {
-                    Toast.makeText(requireContext(), "Please, enter your name", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), R.string.please_enter_your_name, Toast.LENGTH_LONG).show()
                 }
 
             }
         }
+
+        viewBinding.btnDelete.setOnClickListener {
+            showAlertDialog()
+        }
+    }
+
+    private fun showAlertDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.delete)
+            .setMessage(R.string.are_your_sure)
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                viewModel.deleteAccount()
+                dialog.cancel()
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.cancel()
+            }
+            .show()
     }
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
@@ -82,10 +112,4 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                 findNavController().popBackStack()
             }
         }
-
-    companion object {
-        const val TEXTVIEW_NEW_ACCOUNT = "Create new account:"
-        const val TOOLBAR_NEW_ACCOUNT = "New account"
-
-    }
 }

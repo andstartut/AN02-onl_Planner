@@ -41,7 +41,7 @@ class PlannerApp : Application() {
         viewModel { NewAccountViewModel(get()) }
         viewModel { MainViewModel(get(), get(), get()) }
         viewModel { NoteDetailsViewModel() }
-        viewModel { AccountSettingsViewModel(get()) }
+        viewModel { AccountSettingsViewModel(get(), get()) }
     }
 
     private val dataBaseModule = module {
