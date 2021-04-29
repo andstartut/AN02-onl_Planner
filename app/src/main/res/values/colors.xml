@@ -22,4 +22,5 @@
     <color name="note_cyan">#7afcff</color>
     <color name="note_pink">#ff65a3</color>
     <color name="note_pink_lite">#ff7eb9</color>
+    <color name="note_blue_lite">#40a7e3</color>
 </resources>

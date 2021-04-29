@@ -65,11 +65,17 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             adapter.submitList(it)
         }
 
+        viewModel.cloudResultLD.observe(this.viewLifecycleOwner) {
+            if (it) {
+                viewBinding.piCircular.isVisible = false
+            }
+        }
+
         val swipeHandler = object : SwipeToDeleteCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 viewModel.deleteWithUndo(adapter.currentList[viewHolder.adapterPosition]) { note ->
-                    Snackbar.make(view, "Note removed", Snackbar.LENGTH_LONG)
-                        .setAction("UNDO", View.OnClickListener {
+                    Snackbar.make(view, R.string.note_removed, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.UNDO, View.OnClickListener {
                             viewModel.addNote(note)
                         })
                         .show()
@@ -96,14 +102,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
     private fun showCloudDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Chose your destiny")
-            .setMessage("What do you want to do with your notes?")
-            .setPositiveButton("Import") { dialog, _ ->
-//                viewBinding.piCircular.isVisible = true
+            .setTitle(R.string.cloud)
+            .setMessage(R.string.what_to_do_with_notes)
+            .setPositiveButton(R.string.import_string) { dialog, _ ->
+                viewBinding.piCircular.isVisible = true
                 viewModel.importNotes()
                 dialog.cancel()
-            }.setNegativeButton("Export") { dialog, _ ->
-//                viewBinding.piCircular.isVisible = true
+            }.setNegativeButton(R.string.export_string) { dialog, _ ->
+                viewBinding.piCircular.isVisible = true
                 viewModel.exportNotes()
                 dialog.cancel()
             }.show()

@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/toolbar_main"
+        app:title="@string/app_name"
         app:titleTextColor="@color/white" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="22dp"
         android:indeterminate="true"
-        app:indicatorColor="@color/note_yellow_lite"
+        app:indicatorColor="@color/note_blue_lite"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
-        android:contentDescription="@string/bt_add"
+        android:contentDescription="@string/ADD"
         android:src="@drawable/ic_add"
         android:theme="@style/FAB"
         app:elevation="2dp"

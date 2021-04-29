@@ -28,7 +28,7 @@ class NewAccountFragment : NavigationFragment<FragmentNewAccountBinding>(R.layou
             viewBinding.toolbar.title = args.tbNewAccount
             viewBinding.tvWelcome.text = args.etNewAccount
 
-           backPressedCallback.isEnabled = true
+            backPressedCallback.isEnabled = true
         }
 
         viewBinding.btnCreate.setOnClickListener {
@@ -36,7 +36,7 @@ class NewAccountFragment : NavigationFragment<FragmentNewAccountBinding>(R.layou
                 viewModel.createNewAccount(viewBinding.etTypeAccountName.text.toString())
                 findNavController().navigateSafe(NewAccountFragmentDirections.toMainFragment())
             } else {
-                Toast.makeText(requireContext(), "Please, enter your name", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), R.string.please_enter_your_name, Toast.LENGTH_LONG).show()
             }
         }
     }

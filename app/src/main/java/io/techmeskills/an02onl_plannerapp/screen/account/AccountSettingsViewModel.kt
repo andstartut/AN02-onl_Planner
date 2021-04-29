@@ -7,10 +7,13 @@ import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.launch
 
 class AccountSettingsViewModel(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val noteRepository: NoteRepository
 ) : CoroutineViewModel() {
 
     val currentAccountLD = accountRepository.getCurrentAccountFlow().asLiveData()
+
+    val checkAnyAccountExist = accountRepository.checkAnyAccountExist().asLiveData()
 
     fun changeAccountName(newName: String) {
         launch {
@@ -18,6 +21,15 @@ class AccountSettingsViewModel(
                 newName,
                 currentAccountLD.value?.name!!
             )
+        }
+    }
+
+    fun deleteAccount() {
+        launch {
+            accountRepository.deleteAccount()
+            currentAccountLD.value?.let {
+                noteRepository.deleteNotesById(it.id)
+            }
         }
     }
 }

@@ -5,6 +5,8 @@ import io.techmeskills.an02onl_plannerapp.cloud.CloudNote
 import io.techmeskills.an02onl_plannerapp.cloud.ExportNotesRequestBody
 import io.techmeskills.an02onl_plannerapp.cloud.IRetrofitSettings
 import io.techmeskills.an02onl_plannerapp.database.model.Note
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 class CloudRepository(
@@ -12,9 +14,10 @@ class CloudRepository(
     private val noteRepository: NoteRepository,
     private val retrofitSettings: IRetrofitSettings
 ) {
+    @ExperimentalCoroutinesApi
     suspend fun importNotes(): Boolean {
         val account = accountRepository.getCurrentAccountFlow().first()
-        val response = retrofitSettings.importNotes(account.name, accountRepository.phoneId)
+        val response = retrofitSettings.importNotes(account!!.name, accountRepository.phoneId)
         val cloudNotes = response.body() ?: emptyList()
         val notes = cloudNotes.map { cloudNote ->
             Note(
@@ -24,16 +27,20 @@ class CloudRepository(
                 cloudSync = true
             )
         }
+        if (cloudNotes.isNotEmpty()) {
+            noteRepository.deleteAllAccountNotes(account.id)
+        }
         noteRepository.saveNotes(notes)
         return response.isSuccessful
     }
 
+    @ExperimentalCoroutinesApi
     suspend fun exportNotes(): Boolean {
         val account = accountRepository.getCurrentAccountFlow().first()
         val notes = noteRepository.currentAccountNotesFlow
         val exportRequestBody =
             ExportNotesRequestBody(
-                CloudAccount(account.id, account.name),
+                CloudAccount(account!!.id, account.name),
                 accountRepository.phoneId,
                 notes.first().map {
                     CloudNote(it.id, it.title, it.date)
