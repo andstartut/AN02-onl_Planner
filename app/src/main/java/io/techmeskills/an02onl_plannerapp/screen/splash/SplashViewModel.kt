@@ -11,11 +11,4 @@ class SplashViewModel(
 ) : CoroutineViewModel() {
 
     val checkAnyAccountExistLiveData = accountRepository.checkAnyAccountExist().asLiveData()
-//    fun isAccountExist(): Boolean {
-//        var accountId = -1L
-//        launch {
-//            accountId = dataStore.getAccountId()
-//        }
-//        return accountId >= 0L
-//    }
 }

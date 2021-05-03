@@ -52,7 +52,7 @@ class NotesAdapter(
 
 class NoteAdapterDiffCallback : DiffUtil.ItemCallback<Note>() {
     override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.accountName == newItem.accountName
     }
 
     override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {

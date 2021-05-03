@@ -12,19 +12,18 @@ import kotlinx.coroutines.withContext
 class NoteRepository(private val notesDao: NotesDao, private val dataStore: Settings) {
 
     val currentAccountNotesFlow: Flow<List<Note>> =
-        dataStore.getAccountIdFlow()
-            .flatMapLatest { accountId ->
-                notesDao.getAllAccountNotesFlow(accountId)
+        dataStore.getAccountNameFlow()
+            .flatMapLatest { accountName ->
+                notesDao.getAllAccountNotesFlow(accountName)
             }.flowOn(Dispatchers.IO)
 
     suspend fun saveNote(note: Note) {
         withContext(Dispatchers.IO) {
             notesDao.insertNote(
                 Note(
-                    id = note.id,
                     title = note.title,
                     date = note.date,
-                    accountId = dataStore.getAccountId()
+                    accountName = dataStore.getAccountName()
                 )
             )
         }
@@ -46,16 +45,6 @@ class NoteRepository(private val notesDao: NotesDao, private val dataStore: Sett
         withContext(Dispatchers.IO) {
             notesDao.deleteNote(note)
         }
-    }
-
-    suspend fun deleteAllAccountNotes(accountId: Long) {
-        withContext(Dispatchers.IO) {
-            notesDao.deleteNotesById(accountId)
-        }
-    }
-
-    suspend fun deleteNotesById(accountId: Long) {
-        notesDao.deleteNotesById(accountId)
     }
 
     suspend fun setAllNotesSyncWithCloud() {

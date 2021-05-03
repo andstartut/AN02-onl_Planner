@@ -9,6 +9,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "accounts", indices = [Index(value = ["name"], unique = true)])
 open class Account(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    @PrimaryKey()
     val name: String
 ): Parcelable

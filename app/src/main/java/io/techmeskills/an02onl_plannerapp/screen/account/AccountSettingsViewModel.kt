@@ -2,16 +2,14 @@ package io.techmeskills.an02onl_plannerapp.screen.account
 
 import androidx.lifecycle.asLiveData
 import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
-import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.launch
 
 class AccountSettingsViewModel(
-    private val accountRepository: AccountRepository,
-    private val noteRepository: NoteRepository
+    private val accountRepository: AccountRepository
 ) : CoroutineViewModel() {
 
-    val currentAccountLD = accountRepository.getCurrentAccountFlow().asLiveData()
+    val currentAccountNameLD = accountRepository.getCurrentAccountNameFlow().asLiveData()
 
     val checkAnyAccountExist = accountRepository.checkAnyAccountExist().asLiveData()
 
@@ -19,7 +17,7 @@ class AccountSettingsViewModel(
         launch {
             accountRepository.updateCurrentAccountName(
                 newName,
-                currentAccountLD.value?.name!!
+                accountRepository.getCurrentAccountName()
             )
         }
     }
@@ -27,9 +25,6 @@ class AccountSettingsViewModel(
     fun deleteAccount() {
         launch {
             accountRepository.deleteAccount()
-            currentAccountLD.value?.let {
-                noteRepository.deleteNotesById(it.id)
-            }
         }
     }
 }

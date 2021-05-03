@@ -40,8 +40,8 @@ class PlannerApp : Application() {
         viewModel { SplashViewModel(get()) }
         viewModel { NewAccountViewModel(get()) }
         viewModel { MainViewModel(get(), get(), get()) }
-        viewModel { NoteDetailsViewModel() }
-        viewModel { AccountSettingsViewModel(get(), get()) }
+        viewModel { NoteDetailsViewModel(get()) }
+        viewModel { AccountSettingsViewModel(get()) }
     }
 
     private val dataBaseModule = module {

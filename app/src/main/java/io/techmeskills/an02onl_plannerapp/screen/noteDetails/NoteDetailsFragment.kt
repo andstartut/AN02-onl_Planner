@@ -8,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.datastore.dataStore
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -17,6 +18,7 @@ import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.joda.time.DateTime
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -33,10 +35,11 @@ class NoteDetailsFragment :
 
     override val viewBinding: FragmentNoteDetailsBinding by viewBinding()
 
-    private val viewModel: MainViewModel by viewModel()
+    private val viewModel: NoteDetailsViewModel by viewModel()
 
     private val args: NoteDetailsFragmentArgs by navArgs()
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -56,7 +59,7 @@ class NoteDetailsFragment :
                 if (!args.note?.date.isNullOrBlank()) {
                     datePicker.setDate(stringToDate())
                 }
-                toolbar.title = TOOLBAR_TITLE
+                toolbar.title = getString(R.string.edit_note)
             }
         }
 
@@ -69,8 +72,7 @@ class NoteDetailsFragment :
                 args.note?.let {
                     viewModel.editNote(
                         Note(
-                            id = it.id,
-                            accountId = it.accountId,
+                            accountName = it.accountName,
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )
@@ -78,7 +80,7 @@ class NoteDetailsFragment :
                 } ?: kotlin.run {
                     viewModel.addNote(
                         Note(
-                            accountId = -1L,
+                            accountName = "",
                             title = viewBinding.etTypeNote.text.toString(),
                             date = getDate
                         )
@@ -87,7 +89,7 @@ class NoteDetailsFragment :
                 inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
                 findNavController().popBackStack()
             } else {
-                Toast.makeText(requireContext(), "Please, enter your note", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.please_enter_your_name), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -121,9 +123,5 @@ class NoteDetailsFragment :
             .setDayOfWeekTextColor(Color.DKGRAY)
             .showTodayButton(true)
             .init()
-    }
-
-    companion object {
-        const val TOOLBAR_TITLE = "Edit Note"
     }
 }

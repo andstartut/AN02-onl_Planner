@@ -1,9 +1,11 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -36,6 +38,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewBinding.toolbar.setPadding(0, 0, 0, 0)
     }
 
+    @SuppressLint("StringFormatMatches", "ShowToast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,7 +68,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             adapter.submitList(it)
         }
 
-        viewModel.cloudResultLD.observe(this.viewLifecycleOwner) {
+        viewModel.progressIndicatorLD.observe(this.viewLifecycleOwner) {
             if (it) {
                 viewBinding.piCircular.isVisible = false
             }

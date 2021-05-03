@@ -26,5 +26,7 @@
     <string name="your_name">Your name:</string>
     <string name="are_your_sure">Are you sure?</string>
     <string name="note_removed">Note removed</string>
+    <string name="client_error">You have a request error (%s)</string>
+    <string name="server_error">Sorry, but a server have (%s)</string>
     <string name="UNDO">UNDO</string>
 </resources>

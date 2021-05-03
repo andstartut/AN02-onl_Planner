@@ -6,7 +6,6 @@ import io.techmeskills.an02onl_plannerapp.cloud.ExportNotesRequestBody
 import io.techmeskills.an02onl_plannerapp.cloud.IRetrofitSettings
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 class CloudRepository(
@@ -14,21 +13,19 @@ class CloudRepository(
     private val noteRepository: NoteRepository,
     private val retrofitSettings: IRetrofitSettings
 ) {
+
     @ExperimentalCoroutinesApi
     suspend fun importNotes(): Boolean {
-        val account = accountRepository.getCurrentAccountFlow().first()
-        val response = retrofitSettings.importNotes(account!!.name, accountRepository.phoneId)
+        val accountName = accountRepository.getCurrentAccountName()
+        val response = retrofitSettings.importNotes(accountName, accountRepository.phoneId)
         val cloudNotes = response.body() ?: emptyList()
         val notes = cloudNotes.map { cloudNote ->
             Note(
-                accountId = account.id,
+                accountName = accountName,
                 title = cloudNote.title,
                 date = cloudNote.date,
                 cloudSync = true
             )
-        }
-        if (cloudNotes.isNotEmpty()) {
-            noteRepository.deleteAllAccountNotes(account.id)
         }
         noteRepository.saveNotes(notes)
         return response.isSuccessful
@@ -36,14 +33,14 @@ class CloudRepository(
 
     @ExperimentalCoroutinesApi
     suspend fun exportNotes(): Boolean {
-        val account = accountRepository.getCurrentAccountFlow().first()
+        val accountName = accountRepository.getCurrentAccountName()
         val notes = noteRepository.currentAccountNotesFlow
         val exportRequestBody =
             ExportNotesRequestBody(
-                CloudAccount(account!!.id, account.name),
+                CloudAccount(accountName),
                 accountRepository.phoneId,
                 notes.first().map {
-                    CloudNote(it.id, it.title, it.date)
+                    CloudNote(it.accountName, it.title, it.date)
                 })
         val exportResult = retrofitSettings.exportNotes(exportRequestBody).isSuccessful
         if (exportResult) {

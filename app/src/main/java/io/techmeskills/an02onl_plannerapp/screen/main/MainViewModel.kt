@@ -21,9 +21,9 @@ class MainViewModel(
 
     val currentAccountNotesListLD = noteRepository.currentAccountNotesFlow.asLiveData()
 
-    val spinnerDataLD = accountRepository.spinnerData().buffer(Channel.RENDEZVOUS).asLiveData()
+    val spinnerDataLD = accountRepository.spinnerData().asLiveData()
 
-    var cloudResultLD = MutableLiveData<Boolean>()
+    var progressIndicatorLD = MutableLiveData<Boolean>()
 
     fun changeAccount(name: String, position: Int) {
         launch {
@@ -37,18 +37,11 @@ class MainViewModel(
         }
     }
 
-    fun editNote(note: Note) {
-        launch() {
-            noteRepository.updateNote(note)
-        }
-    }
-
     fun deleteWithUndo(note: Note, callback: (Note) -> Unit) {
         val noteCopy = Note(
-            id = note.id,
             title = note.title,
             date = note.date,
-            accountId = note.accountId,
+            accountName = note.accountName,
         )
         launch() {
             noteRepository.deleteNote(note)
@@ -60,7 +53,7 @@ class MainViewModel(
     fun importNotes() {
         launch {
             val importNotes = cloudRepository.importNotes()
-            cloudResultLD.postValue(importNotes)
+            progressIndicatorLD.postValue(importNotes)
         }
     }
 
@@ -68,7 +61,13 @@ class MainViewModel(
     fun exportNotes() {
         launch {
             val exportNotes = cloudRepository.exportNotes()
-            cloudResultLD.postValue(exportNotes)
+            progressIndicatorLD.postValue(exportNotes)
         }
     }
+
+//    fun networkErrors() {
+//        launch {
+//            networkErrorsLD.postValue(cloudRepository.networkErrors)
+//        }
+//    }
 }
