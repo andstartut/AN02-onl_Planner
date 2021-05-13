@@ -29,4 +29,6 @@
     <string name="client_error">You have a request error (%s)</string>
     <string name="server_error">Sorry, but a server have (%s)</string>
     <string name="UNDO">UNDO</string>
+    <string name="no_date">no date</string>
+    <string name="set_event">Set event</string>
 </resources>

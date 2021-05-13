@@ -19,7 +19,7 @@
 
     <style name="FAB" parent="Widget.AppCompat.Button">
         <item name="colorSecondary">@color/note_yellow_rich</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
     </style>
 
     <style name="Button" parent="Widget.AppCompat.Button">
@@ -36,6 +36,11 @@
     <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="switchStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="colorAccent">@color/note_yellow_rich</item>
+<!--        <item name="trackTint">@color/note_yellow_rich</item>-->
         <item name="android:textSize">18sp</item>
     </style>
 </resources>

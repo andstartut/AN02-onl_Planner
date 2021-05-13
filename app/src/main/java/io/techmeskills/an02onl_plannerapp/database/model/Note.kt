@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Parcelize
 @Entity(
@@ -14,14 +15,16 @@ import kotlinx.parcelize.Parcelize
         parentColumns = ["name"],
         childColumns = ["accountName"],
         onUpdate = CASCADE,
-        onDelete = CASCADE)]
+        onDelete = CASCADE
+    )]
 )
 open class Note(
     @PrimaryKey()
     @ColumnInfo(name = "title")
     val title: String,
-    val date: String?,
+    val date: Long?,
     @ColumnInfo(index = true, name = "accountName")
     val accountName: String,
-    val cloudSync: Boolean = false
+    val cloudSync: Boolean = false,
+    val setEvent: Boolean = false
 ) : Parcelable

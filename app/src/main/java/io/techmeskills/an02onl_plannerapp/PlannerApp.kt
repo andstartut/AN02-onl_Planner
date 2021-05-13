@@ -4,10 +4,11 @@ import android.app.Application
 import io.techmeskills.an02onl_plannerapp.cloud.IRetrofitSettings
 import io.techmeskills.an02onl_plannerapp.database.db.BuildDataBase
 import io.techmeskills.an02onl_plannerapp.database.db.NotesDatabase
-import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
-import io.techmeskills.an02onl_plannerapp.database.repository.CloudRepository
-import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
+import io.techmeskills.an02onl_plannerapp.repository.AccountRepository
+import io.techmeskills.an02onl_plannerapp.repository.CloudRepository
+import io.techmeskills.an02onl_plannerapp.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.datastore.Settings
+import io.techmeskills.an02onl_plannerapp.repository.NotificationRepository
 import io.techmeskills.an02onl_plannerapp.screen.account.AccountSettingsViewModel
 import io.techmeskills.an02onl_plannerapp.screen.account.NewAccountViewModel
 import io.techmeskills.an02onl_plannerapp.screen.main.MainViewModel
@@ -41,7 +42,7 @@ class PlannerApp : Application() {
         viewModel { NewAccountViewModel(get()) }
         viewModel { MainViewModel(get(), get(), get()) }
         viewModel { NoteDetailsViewModel(get()) }
-        viewModel { AccountSettingsViewModel(get()) }
+        viewModel { AccountSettingsViewModel(get(), get()) }
     }
 
     private val dataBaseModule = module {
@@ -56,8 +57,9 @@ class PlannerApp : Application() {
 
     private val repositoryModule = module {
         factory { AccountRepository(get(), get(), get()) }
-        factory { NoteRepository(get(), get()) }
-        factory { CloudRepository(get(), get(), get()) }
+        factory { NoteRepository(get(), get(), get()) }
+        factory { CloudRepository(get(), get(), get(), get()) }
+        factory { NotificationRepository(get()) }
     }
 
     private val cloudModule = module {

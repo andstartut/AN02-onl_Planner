@@ -1,4 +1,4 @@
-package io.techmeskills.an02onl_plannerapp.database.repository
+package io.techmeskills.an02onl_plannerapp.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -34,8 +34,7 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
 
     suspend fun switchBetweenAccountsByName(name: String, position: Int) {
         withContext(Dispatchers.IO) {
-            dataStore.saveAccountName(name)
-            dataStore.saveAccountPos(position)
+            dataStore.saveAccountNameAndPos(name, position)
         }
     }
 
@@ -59,7 +58,7 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
         dataStore.saveAccountName(newName)
     }
 
-    fun getCurrentAccountPosition(): Flow<Int> {
+    private fun getCurrentAccountPosition(): Flow<Int> {
         return dataStore.getAccountPosFlow()
     }
 
@@ -67,8 +66,10 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
     suspend fun deleteAccount() {
         accountsDao.deleteAccount(Account(dataStore.getAccountName()))
         if (checkAnyAccountExist().first()) {
-            dataStore.saveAccountPos(FIRST_POSITION)
-            dataStore.saveAccountName(accountsDao.getAllAccountsFlow().first()[FIRST_POSITION].name)
+            dataStore.saveAccountNameAndPos(
+                accountsDao.getAllAccountsFlow().first()[FIRST_POSITION].name,
+                FIRST_POSITION
+            )
         }
     }
 

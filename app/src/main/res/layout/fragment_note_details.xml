@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f5f5f5">
@@ -32,21 +33,33 @@
         android:cursorVisible="true"
         android:textCursorDrawable="@drawable/cursor_background"
         android:elevation="1dp"
-        app:layout_constraintBottom_toTopOf="@id/datePicker"
+        app:layout_constraintBottom_toTopOf="@id/swEvent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.github.jhonnyx2012.horizontalpicker.HorizontalPicker
-        android:id="@+id/datePicker"
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/swEvent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:elevation="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnConfirm"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/set_event"
+        android:theme="@style/switchStyle"
+        app:thumbTextPadding="10dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvEventDate"
+        app:layout_constraintTop_toBottomOf="@+id/etTypeNote" />
+
+    <TextView
+        android:id="@+id/tvEventDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="@string/no_date"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@id/swEvent"
         app:layout_constraintTop_toBottomOf="@id/etTypeNote" />
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnConfirm"
@@ -58,6 +71,6 @@
         app:backgroundTint="@color/note_yellow_rich"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/datePicker" />
+        app:layout_constraintTop_toBottomOf="@id/swEvent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

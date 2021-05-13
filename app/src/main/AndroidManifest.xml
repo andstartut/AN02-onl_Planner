@@ -4,26 +4,33 @@
     package="io.techmeskills.an02onl_plannerapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <application
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <application
         android:name=".PlannerApp"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        tools:node="replace"
-        android:allowBackup="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AN02ONL_PlannerApp">
+        android:theme="@style/Theme.AN02ONL_PlannerApp"
+        tools:node="replace">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".notification.NotificationReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="TODO" />
+        <service android:name=".notification.ActionService" />
     </application>
 
 </manifest>

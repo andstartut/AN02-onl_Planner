@@ -3,13 +3,11 @@ package io.techmeskills.an02onl_plannerapp.screen.main
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import io.techmeskills.an02onl_plannerapp.database.model.Note
-import io.techmeskills.an02onl_plannerapp.database.repository.AccountRepository
-import io.techmeskills.an02onl_plannerapp.database.repository.CloudRepository
-import io.techmeskills.an02onl_plannerapp.database.repository.NoteRepository
+import io.techmeskills.an02onl_plannerapp.repository.AccountRepository
+import io.techmeskills.an02onl_plannerapp.repository.CloudRepository
+import io.techmeskills.an02onl_plannerapp.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -64,10 +62,4 @@ class MainViewModel(
             progressIndicatorLD.postValue(exportNotes)
         }
     }
-
-//    fun networkErrors() {
-//        launch {
-//            networkErrorsLD.postValue(cloudRepository.networkErrors)
-//        }
-//    }
 }

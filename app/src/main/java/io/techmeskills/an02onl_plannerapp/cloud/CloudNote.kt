@@ -5,5 +5,6 @@ import com.google.gson.annotations.SerializedName
 class CloudNote(
     @SerializedName("accountName") val id: String,
     @SerializedName("title") val title: String,
-    @SerializedName("date") val date: String?
+    @SerializedName("date") val date: Long?,
+    @SerializedName("setEvent") val setEvent: Boolean
 )

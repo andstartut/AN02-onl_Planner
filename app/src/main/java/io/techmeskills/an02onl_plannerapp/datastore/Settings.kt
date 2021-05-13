@@ -26,9 +26,16 @@ class Settings(val context: Context) {
         }
     }
 
-    suspend fun saveAccountPos(accountPos: Int) {
+    suspend fun saveAccountPos(position: Int) {
         context.dataStore.edit { preferences ->
-            preferences[intPreferencesKey(ACCOUNT_POSITION)] = accountPos
+            preferences[intPreferencesKey(ACCOUNT_POSITION)] = position
+        }
+    }
+
+    suspend fun saveAccountNameAndPos(accountName: String, position: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(ACCOUNT_NAME)] = accountName
+            preferences[intPreferencesKey(ACCOUNT_POSITION)] = position
         }
     }
 
