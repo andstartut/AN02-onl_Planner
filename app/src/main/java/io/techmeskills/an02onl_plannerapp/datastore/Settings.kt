@@ -2,10 +2,7 @@ package io.techmeskills.an02onl_plannerapp.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.*
 
@@ -13,9 +10,9 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 class Settings(val context: Context) {
 
-    fun getAccountIdFlow(): Flow<Long> = context.dataStore.data
+    fun getAccountNameFlow(): Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[longPreferencesKey(ACCOUNT_ID)] ?: -1L
+            preferences[stringPreferencesKey(ACCOUNT_NAME)] ?: ""
         }
 
     fun getAccountPosFlow(): Flow<Int> = context.dataStore.data
@@ -23,24 +20,31 @@ class Settings(val context: Context) {
             preferences[intPreferencesKey(ACCOUNT_POSITION)] ?: 0
         }
 
-    suspend fun saveAccountId(accountId: Long) {
+    suspend fun saveAccountName(accountName: String) {
         context.dataStore.edit { preferences ->
-            preferences[longPreferencesKey(ACCOUNT_ID)] = accountId
+            preferences[stringPreferencesKey(ACCOUNT_NAME)] = accountName
         }
     }
 
-    suspend fun saveAccountPos(accountPos: Int) {
+    suspend fun saveAccountPos(position: Int) {
         context.dataStore.edit { preferences ->
-            preferences[intPreferencesKey(ACCOUNT_POSITION)] = accountPos
+            preferences[intPreferencesKey(ACCOUNT_POSITION)] = position
         }
     }
 
-    suspend fun getAccountId(): Long = getAccountIdFlow().first()
+    suspend fun saveAccountNameAndPos(accountName: String, position: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(ACCOUNT_NAME)] = accountName
+            preferences[intPreferencesKey(ACCOUNT_POSITION)] = position
+        }
+    }
+
+    suspend fun getAccountName(): String = getAccountNameFlow().first()
 
     suspend fun getAccountPos(): Int = getAccountPosFlow().first()
 
     companion object {
-        const val ACCOUNT_ID = "account_id"
+        const val ACCOUNT_NAME = "account_name"
         const val ACCOUNT_POSITION = "account_position"
     }
 }

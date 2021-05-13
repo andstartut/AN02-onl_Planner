@@ -1,4 +1,4 @@
-package io.techmeskills.an02onl_plannerapp.database.repository
+package io.techmeskills.an02onl_plannerapp.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,8 +18,7 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
         withContext(Dispatchers.IO) {
             if (isAccountExists(name).not()) {
                 accountsDao.addAccount(Account(name = name))
-                dataStore.saveAccountId(accountsDao.getAccountId(name))
-                dataStore.saveAccountPos(dataStore.getAccountPos())
+                dataStore.saveAccountPos(accountsDao.getAllAccountsCountFlow().first() - 1)
             }
         }
     }
@@ -35,38 +34,42 @@ class AccountRepository(private val accountsDao: AccountsDao, private val dataSt
 
     suspend fun switchBetweenAccountsByName(name: String, position: Int) {
         withContext(Dispatchers.IO) {
-            dataStore.saveAccountId(accountsDao.getAccountId(name))
-            dataStore.saveAccountPos(position)
+            dataStore.saveAccountNameAndPos(name, position)
         }
     }
 
-    fun spinnerData() = accountsDao.getAllAccountsNameFlow().combine(
+    fun spinnerData() = accountsDao.getAllAccountsNamesFlow().combine(
         getCurrentAccountPosition()
     ) { list, accountPos ->
         list to accountPos
     }
 
     @ExperimentalCoroutinesApi
-    fun getCurrentAccountFlow(): Flow<Account?> {
-        return dataStore.getAccountIdFlow().flatMapLatest {
-            accountsDao.getAccountFlow(it)
-        }
+    suspend fun getCurrentAccountName(): String {
+        return dataStore.getAccountName()
     }
 
-    fun updateCurrentAccountName(newName: String, oldName: String) {
+    fun getCurrentAccountNameFlow(): Flow<String> {
+        return dataStore.getAccountNameFlow()
+    }
+
+    suspend fun updateCurrentAccountName(newName: String, oldName: String) {
         accountsDao.updateAccountName(newName, oldName)
+        dataStore.saveAccountName(newName)
     }
 
-    fun getCurrentAccountPosition(): Flow<Int> {
+    private fun getCurrentAccountPosition(): Flow<Int> {
         return dataStore.getAccountPosFlow()
     }
 
     @ExperimentalCoroutinesApi
     suspend fun deleteAccount() {
-        accountsDao.deleteAccount(getCurrentAccountFlow().first()!!)
+        accountsDao.deleteAccount(Account(dataStore.getAccountName()))
         if (checkAnyAccountExist().first()) {
-            dataStore.saveAccountPos(FIRST_POSITION)
-            dataStore.saveAccountId(accountsDao.getAllAccountsFlow().first()[FIRST_POSITION].id)
+            dataStore.saveAccountNameAndPos(
+                accountsDao.getAllAccountsFlow().first()[FIRST_POSITION].name,
+                FIRST_POSITION
+            )
         }
     }
 

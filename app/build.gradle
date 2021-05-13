@@ -77,7 +77,11 @@ dependencies {
 
     implementation "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.4.1"
 
+    //DATAPICKER
     implementation "com.github.jhonnyx2012:horizontal-picker:1.0.6"
+
+    //TIME & DATA PICKER
+    implementation "com.github.florent37:singledateandtimepicker:2.2.7"
 
     kapt "androidx.room:room-compiler:2.2.6"
     implementation "androidx.room:room-runtime:2.2.6"

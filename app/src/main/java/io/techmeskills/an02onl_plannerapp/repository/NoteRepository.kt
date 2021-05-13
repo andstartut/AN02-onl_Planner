@@ -1,4 +1,4 @@
-package io.techmeskills.an02onl_plannerapp.database.repository
+package io.techmeskills.an02onl_plannerapp.repository
 
 import io.techmeskills.an02onl_plannerapp.database.dao.NotesDao
 import io.techmeskills.an02onl_plannerapp.database.model.Note
@@ -9,24 +9,31 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class NoteRepository(private val notesDao: NotesDao, private val dataStore: Settings) {
+class NoteRepository(
+    private val notesDao: NotesDao,
+    private val dataStore: Settings,
+    private val notificationRepository: NotificationRepository
+) {
 
     val currentAccountNotesFlow: Flow<List<Note>> =
-        dataStore.getAccountIdFlow()
-            .flatMapLatest { accountId ->
-                notesDao.getAllAccountNotesFlow(accountId)
+        dataStore.getAccountNameFlow()
+            .flatMapLatest { accountName ->
+                notesDao.getAllAccountNotesFlow(accountName)
             }.flowOn(Dispatchers.IO)
 
     suspend fun saveNote(note: Note) {
         withContext(Dispatchers.IO) {
             notesDao.insertNote(
                 Note(
-                    id = note.id,
                     title = note.title,
                     date = note.date,
-                    accountId = dataStore.getAccountId()
+                    setEvent = note.setEvent,
+                    accountName = dataStore.getAccountName()
                 )
             )
+            if (note.setEvent) {
+                notificationRepository.setNotification(note)
+            }
         }
     }
 
@@ -38,24 +45,19 @@ class NoteRepository(private val notesDao: NotesDao, private val dataStore: Sett
 
     suspend fun updateNote(note: Note) {
         withContext(Dispatchers.IO) {
+            notificationRepository.undoNotification(note)
             notesDao.updateNote(note)
+            if (note.setEvent) {
+                notificationRepository.setNotification(note)
+            }
         }
     }
 
     suspend fun deleteNote(note: Note) {
         withContext(Dispatchers.IO) {
             notesDao.deleteNote(note)
+            notificationRepository.undoNotification(note)
         }
-    }
-
-    suspend fun deleteAllAccountNotes(accountId: Long) {
-        withContext(Dispatchers.IO) {
-            notesDao.deleteNotesById(accountId)
-        }
-    }
-
-    suspend fun deleteNotesById(accountId: Long) {
-        notesDao.deleteNotesById(accountId)
     }
 
     suspend fun setAllNotesSyncWithCloud() {

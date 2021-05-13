@@ -26,8 +26,8 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
-            viewBinding.tvName.text = it?.name
+        viewModel.currentAccountNameLD.observe(this.viewLifecycleOwner) { accountName ->
+            viewBinding.tvName.text = accountName
         }
 
         viewModel.checkAnyAccountExist.observe(this.viewLifecycleOwner) { isAccountListNotEmpty ->
@@ -43,11 +43,11 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
 
         viewBinding.btnCreate.setOnClickListener {
             findNavController().navigateSafe(
-            AccountSettingsFragmentDirections.toNewAccountFragment(
-                tbNewAccount = getString(R.string.create_new),
-                etNewAccount = getString(R.string.create_new_account),
+                AccountSettingsFragmentDirections.toNewAccountFragment(
+                    tbNewAccount = getString(R.string.create_new),
+                    etNewAccount = getString(R.string.create_new_account),
+                )
             )
-        )
         }
 
         viewBinding.btnEdit.setOnClickListener {
@@ -55,8 +55,8 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                 viewBinding.btnCreate.visibility = View.GONE
                 viewBinding.btnDelete.visibility = View.GONE
 
-                viewModel.currentAccountLD.observe(this.viewLifecycleOwner) {
-                    viewBinding.etTypeAccountName.setText(it!!.name, TextView.BufferType.EDITABLE)
+                viewModel.currentAccountNameLD.observe(this.viewLifecycleOwner) {accountName ->
+                    viewBinding.etTypeAccountName.setText(accountName, TextView.BufferType.EDITABLE)
                 }
 
                 viewBinding.etTypeAccountName.visibility = View.VISIBLE

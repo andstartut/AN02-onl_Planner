@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.model.Note
+import java.text.SimpleDateFormat
+import java.util.*
 
 class NotesAdapter(
     private val onClick: (Note) -> Unit
@@ -28,6 +30,8 @@ class NotesAdapter(
         holder.bind(getItem(position))
     }
 
+    private val dateFormatter = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+
     inner class NoteViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -44,7 +48,7 @@ class NotesAdapter(
 
         fun bind(item: Note) {
             tvTitle.text = item.title
-            tvDate.text = item.date
+            tvDate.text = dateFormatter.format(item.date)
             ivCloud.isVisible = item.cloudSync
         }
     }
@@ -52,11 +56,14 @@ class NotesAdapter(
 
 class NoteAdapterDiffCallback : DiffUtil.ItemCallback<Note>() {
     override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.accountName == newItem.accountName
     }
 
     override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem.title == newItem.title && oldItem.date == newItem.date && oldItem.cloudSync == newItem.cloudSync
+        return oldItem.title == newItem.title &&
+                oldItem.date == newItem.date &&
+                oldItem.setEvent == newItem.setEvent &&
+                oldItem.cloudSync == newItem.cloudSync
     }
 
 }
