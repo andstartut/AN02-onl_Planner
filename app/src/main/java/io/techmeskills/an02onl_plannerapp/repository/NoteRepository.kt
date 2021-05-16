@@ -25,6 +25,7 @@ class NoteRepository(
         withContext(Dispatchers.IO) {
             notesDao.insertNote(
                 Note(
+                    id = note.id,
                     title = note.title,
                     date = note.date,
                     setEvent = note.setEvent,
@@ -60,9 +61,20 @@ class NoteRepository(
         }
     }
 
+    suspend fun deleteNoteById(noteId: Long) {
+        withContext(Dispatchers.IO) {
+            notesDao.getNote(noteId).let { note ->
+                notesDao.deleteNote(note)
+                notificationRepository.undoNotification(note)
+            }
+        }
+    }
+
     suspend fun setAllNotesSyncWithCloud() {
         withContext(Dispatchers.IO) {
             notesDao.setAllNotesSyncWithCloud()
         }
     }
+
+
 }

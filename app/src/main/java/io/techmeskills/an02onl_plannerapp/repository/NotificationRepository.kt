@@ -14,7 +14,9 @@ class NotificationRepository(private val context: Context) {
     private fun createIntent(note: Note): PendingIntent {
         val intent = Intent(context, NotificationReceiver::class.java)
         intent.action = INTENT_NOTE_ACTION
+        intent.putExtra(INTENT_NOTE_ACCOUNT, note.accountName)
         intent.putExtra(INTENT_NOTE_TITLE, note.title)
+        intent.putExtra(INTENT_NOTE_ID, note.id)
         return PendingIntent.getBroadcast(
             context,
             0,
@@ -24,7 +26,7 @@ class NotificationRepository(private val context: Context) {
     }
 
     fun setNotification(note: Note) {
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, note.date!!, createIntent(note))
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, note.date, createIntent(note))
     }
 
     fun undoNotification(note: Note) {
@@ -33,8 +35,9 @@ class NotificationRepository(private val context: Context) {
 
     companion object {
         const val INTENT_NOTE_TITLE = "title"
-        const val INTENT_NOTE_BUTTON_DELETE = "delete"
+        const val INTENT_NOTE_ACCOUNT = "account"
         const val INTENT_NOTE_ACTION = "planner"
+        const val INTENT_NOTE_ID = "id"
 
     }
 }

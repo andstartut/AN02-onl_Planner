@@ -21,6 +21,9 @@ abstract class NotesDao {
     @Query("SELECT * FROM notes")
     abstract fun getAllNotes(): List<Note>
 
+    @Query("SELECT * FROM notes WHERE id == :noteId")
+    abstract fun getNote(noteId: Long): Note
+
     @Query("SELECT * FROM notes")
     abstract fun getAllNotesFlow(): Flow<List<Note>>
 

@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 @Entity(
@@ -19,10 +18,10 @@ import java.util.*
     )]
 )
 open class Note(
-    @PrimaryKey()
-    @ColumnInfo(name = "title")
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0L,
     val title: String,
-    val date: Long?,
+    val date: Long,
     @ColumnInfo(index = true, name = "accountName")
     val accountName: String,
     val cloudSync: Boolean = false,

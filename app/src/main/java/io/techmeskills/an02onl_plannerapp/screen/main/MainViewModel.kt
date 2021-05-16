@@ -37,9 +37,11 @@ class MainViewModel(
 
     fun deleteWithUndo(note: Note, callback: (Note) -> Unit) {
         val noteCopy = Note(
+            id = note.id,
             title = note.title,
             date = note.date,
             accountName = note.accountName,
+            setEvent = note.setEvent
         )
         launch() {
             noteRepository.deleteNote(note)
