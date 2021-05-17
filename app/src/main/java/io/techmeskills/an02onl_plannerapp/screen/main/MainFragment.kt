@@ -1,11 +1,11 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -18,6 +18,7 @@ import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
@@ -38,11 +39,17 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         viewBinding.toolbar.setPadding(0, 0, 0, 0)
     }
 
+    @ExperimentalCoroutinesApi
     @SuppressLint("StringFormatMatches", "ShowToast")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewBinding.recyclerView.adapter = adapter
+        viewBinding.recyclerView.adapter!!.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                viewBinding.recyclerView.scrollToPosition(0)
+            }
+        })
 
         viewModel.spinnerDataLD.observe(this.viewLifecycleOwner) {
 
@@ -56,7 +63,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
         viewBinding.spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, positionInList: Int, p3: Long) {
+            override fun onItemSelected(parent: AdapterView<*>?, p1: View?, positionInList: Int, p3: Long) {
                 viewModel.changeAccount(viewBinding.spinner.selectedItem.toString(), positionInList)
             }
 
@@ -103,6 +110,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         }
     }
 
+    @ExperimentalCoroutinesApi
     private fun showCloudDialog() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.cloud)

@@ -63,7 +63,7 @@ class NoteAdapterDiffCallback : DiffUtil.ItemCallback<Note>() {
 
     override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
         return oldItem.id == newItem.id &&
-        return oldItem.title == newItem.title &&
+                oldItem.title == newItem.title &&
                 oldItem.date == newItem.date &&
                 oldItem.setEvent == newItem.setEvent &&
                 oldItem.cloudSync == newItem.cloudSync

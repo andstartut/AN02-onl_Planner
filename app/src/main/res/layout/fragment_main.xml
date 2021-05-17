@@ -47,7 +47,6 @@
         android:ellipsize="marquee"
         android:padding="8dp"
         android:spinnerMode="dialog"
-        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/recyclerView"
         app:layout_constraintEnd_toStartOf="@+id/btnCloud"
         app:layout_constraintTop_toTopOf="parent" />

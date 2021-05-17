@@ -23,9 +23,9 @@ class ActionService : Service(), KoinComponent {
         intent?.let {
             noteId = it.getLongExtra(NotificationRepository.INTENT_NOTE_ID, -1)
             when (it.action) {
-                NotificationReceiver.ACTION_NEW_TIME -> {
+                NotificationReceiver.ACTION_POSTPONE -> {
                     GlobalScope.launch(Dispatchers.Main) {
-//                        noteRepository.(noteId)
+                        noteRepository.postponeNoteById(noteId)
                         Toast.makeText(applicationContext, "Do something", Toast.LENGTH_LONG).show()
                     }
                 }

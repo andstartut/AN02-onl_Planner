@@ -76,5 +76,14 @@ class NoteRepository(
         }
     }
 
-
+    suspend fun postponeNoteById(noteId: Long) {
+        withContext(Dispatchers.IO) {
+            notesDao.getNote(noteId).let { note ->
+                notificationRepository.undoNotification(note)
+                val postponedNote = notificationRepository.postponeNoteTimeByFiveMinutes(note)
+                notesDao.updateNote(postponedNote)
+                notificationRepository.setNotification(postponedNote)
+            }
+        }
+    }
 }
