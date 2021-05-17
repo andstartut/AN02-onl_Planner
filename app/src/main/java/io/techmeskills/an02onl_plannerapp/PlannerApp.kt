@@ -59,7 +59,7 @@ class PlannerApp : Application() {
         factory { AccountRepository(get(), get(), get()) }
         factory { NoteRepository(get(), get(), get()) }
         factory { CloudRepository(get(), get(), get(), get()) }
-        factory { NotificationRepository(get()) }
+        factory { NotificationRepository(get(), get()) }
     }
 
     private val cloudModule = module {

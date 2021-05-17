@@ -21,10 +21,13 @@ abstract class NotesDao {
     @Query("SELECT * FROM notes")
     abstract fun getAllNotes(): List<Note>
 
-    @Query("SELECT * FROM notes")
+    @Query("SELECT * FROM notes WHERE id == :noteId")
+    abstract fun getNote(noteId: Long): Note
+
+    @Query("SELECT * FROM notes ORDER BY id ASC")
     abstract fun getAllNotesFlow(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE accountName == :accountName")
+    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY id DESC")
     abstract fun getAllAccountNotesFlow(accountName: String): Flow<List<Note>>
 
     @Query("UPDATE notes SET cloudSync = 1")

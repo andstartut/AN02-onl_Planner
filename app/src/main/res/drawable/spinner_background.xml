@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="@android:integer/config_mediumAnimTime">
+<selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:exitFadeDuration="@android:integer/config_mediumAnimTime" tools:ignore="ExtraText">
+    android:exitFadeDuration="@android:integer/config_mediumAnimTime">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/note_yellow_rich" />

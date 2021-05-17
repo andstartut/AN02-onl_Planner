@@ -48,7 +48,9 @@ class NotesAdapter(
 
         fun bind(item: Note) {
             tvTitle.text = item.title
-            tvDate.text = dateFormatter.format(item.date)
+            if (item.setEvent) {
+                tvDate.text = dateFormatter.format(item.date)
+            }
             ivCloud.isVisible = item.cloudSync
         }
     }
@@ -60,7 +62,8 @@ class NoteAdapterDiffCallback : DiffUtil.ItemCallback<Note>() {
     }
 
     override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem.title == newItem.title &&
+        return oldItem.id == newItem.id &&
+                oldItem.title == newItem.title &&
                 oldItem.date == newItem.date &&
                 oldItem.setEvent == newItem.setEvent &&
                 oldItem.cloudSync == newItem.cloudSync
