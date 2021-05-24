@@ -30,7 +30,6 @@ class CloudRepository(
             val cloudNotes = response.body() ?: emptyList()
             val notes = cloudNotes.map { cloudNote ->
                 Note(
-                    id = cloudNote.id,
                     accountName = accountName,
                     title = cloudNote.title,
                     date = cloudNote.date,
@@ -61,7 +60,7 @@ class CloudRepository(
                     CloudAccount(accountName),
                     accountRepository.phoneId,
                     notes.first().map {
-                        CloudNote(it.id, it.accountName, it.title, it.date, it.setEvent)
+                        CloudNote(it.title, it.date, it.setEvent)
                     })
             val exportResult = retrofitSettings.exportNotes(exportRequestBody).isSuccessful
             if (exportResult) {

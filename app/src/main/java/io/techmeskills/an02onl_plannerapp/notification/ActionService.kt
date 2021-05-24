@@ -1,9 +1,13 @@
 package io.techmeskills.an02onl_plannerapp.notification
 
+import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import io.techmeskills.an02onl_plannerapp.repository.NoteRepository
 import io.techmeskills.an02onl_plannerapp.repository.NotificationRepository
 import kotlinx.coroutines.Dispatchers
@@ -19,20 +23,22 @@ class ActionService : Service(), KoinComponent {
 
     private var noteId = -1L
 
+    @SuppressLint("ServiceCast")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notificationBuilderManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         intent?.let {
             noteId = it.getLongExtra(NotificationRepository.INTENT_NOTE_ID, -1)
             when (it.action) {
                 NotificationReceiver.ACTION_POSTPONE -> {
                     GlobalScope.launch(Dispatchers.Main) {
                         noteRepository.postponeNoteById(noteId)
-                        Toast.makeText(applicationContext, "Do something", Toast.LENGTH_LONG).show()
+                        notificationBuilderManager.cancel(noteId.toInt())
                     }
                 }
                 NotificationReceiver.ACTION_DELETE -> {
                     GlobalScope.launch(Dispatchers.Main) {
                         noteRepository.deleteNoteById(noteId)
-                        Toast.makeText(applicationContext, "Note deleted", Toast.LENGTH_LONG).show()
+                        notificationBuilderManager.cancel(noteId.toInt())
                     }
                 }
                 else -> Unit

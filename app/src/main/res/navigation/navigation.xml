@@ -14,12 +14,20 @@
             android:id="@+id/toMainFragment"
             app:destination="@+id/mainFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/alpha_up"
+            app:exitAnim="@anim/alpha_down"
+            app:popEnterAnim="@anim/alpha_up"
+            app:popExitAnim="@anim/alpha_down"/>
         <action
             android:id="@+id/toNewAccountFragment"
             app:destination="@id/NewAccountFragment"
             app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/alpha_up"
+            app:exitAnim="@anim/alpha_down"
+            app:popEnterAnim="@anim/alpha_up"
+            app:popExitAnim="@anim/alpha_down"/>
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
@@ -28,10 +36,15 @@
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/toNoteDetailsFragment"
-            app:destination="@id/noteDetailFragment" />
+            app:destination="@id/noteDetailFragment"
+            />
         <action
             android:id="@+id/toAccountSettingsFragment"
-            app:destination="@id/accountSettingsFragment" />
+            app:destination="@id/accountSettingsFragment"
+            app:enterAnim="@anim/alpha_up"
+            app:exitAnim="@anim/alpha_down"
+            app:popEnterAnim="@anim/alpha_up"
+            app:popExitAnim="@anim/alpha_down" />
     </fragment>
     <fragment
         android:id="@+id/NewAccountFragment"
@@ -67,6 +80,10 @@
         tools:layout="@layout/fragment_account_settings">
         <action
             android:id="@+id/toNewAccountFragment"
-            app:destination="@id/NewAccountFragment" />
+            app:destination="@id/NewAccountFragment"
+            app:enterAnim="@anim/alpha_up"
+            app:exitAnim="@anim/alpha_down"
+            app:popEnterAnim="@anim/alpha_up"
+            app:popExitAnim="@anim/alpha_down"/>
     </fragment>
 </navigation>

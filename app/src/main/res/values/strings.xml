@@ -18,7 +18,7 @@
     <string name="export_string">Export</string>
     <string name="add_new_note">Add new note</string>
     <string name="edit_note">Edit note</string>
-    <string name="accounts_settings">Accounts settings</string>
+    <string name="account_settings">Account settings</string>
     <string name="tv_welcomeTitle">Hi!\nBefore we start, let\'s create a new account</string>
     <string name="what_to_do_with_notes">"What do you want to do with your notes?"</string>
     <string name="add_new_account">Add new account:</string>
@@ -31,4 +31,5 @@
     <string name="UNDO">UNDO</string>
     <string name="no_date">no date</string>
     <string name="set_event">Set event</string>
+    <string name="actionbar_spinner">ActionBar Spinner</string>
 </resources>

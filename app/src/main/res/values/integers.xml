@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="config_screenAnimTime200">200</integer>
+    <integer name="config_screenAnimTime300">300</integer>
+    <integer name="config_screenAnimTime400">400</integer>
+    <integer name="config_screenAnimTime1000">1000</integer>
+</resources>

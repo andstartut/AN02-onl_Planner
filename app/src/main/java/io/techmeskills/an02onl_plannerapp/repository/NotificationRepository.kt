@@ -42,10 +42,6 @@ class NotificationRepository(private val context: Context, private val dataStore
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, note.date, createIntent(note))
     }
 
-    fun undoNotification(note: Note) {
-        alarmManager.cancel(createIntent(note))
-    }
-
     fun postponeNoteTimeByFiveMinutes(note: Note): Note {
         val calendar = Calendar.getInstance()
         calendar.time = Date(note.date)

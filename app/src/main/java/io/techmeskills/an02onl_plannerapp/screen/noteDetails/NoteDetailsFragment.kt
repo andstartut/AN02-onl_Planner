@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.transition.TransitionInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -35,12 +36,28 @@ class NoteDetailsFragment :
 
     private val args: NoteDetailsFragmentArgs by navArgs()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+    }
+
     @SuppressLint("ResourceAsColor")
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        fun getImageId(): Int {
+            val random = Random().nextInt(3)
+            return context?.resources!!.getIdentifier(
+                "drawable/toolbar_background_$random",
+                null,
+                context?.packageName
+            )
+        }
+        viewBinding.ivToolbarBackground.setImageResource(getImageId())
+
         var setEventCondition = false
+        var count = 0
 
         viewBinding.etTypeNote.requestFocus()
         val inputMethodManager = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -50,7 +67,8 @@ class NoteDetailsFragment :
             if (switchCondition) {
                 setEventCondition = switchCondition
                 viewModel.date.observe(this.viewLifecycleOwner) { date ->
-                    if (date.time < Date().time) {
+                    if (date.time < Date().time && count == 0) {
+                        count++
                         viewModel.setDate(Date())
                     }
                 }
@@ -70,7 +88,7 @@ class NoteDetailsFragment :
             viewBinding.run {
                 etTypeNote.setText(note.title)
                 viewModel.setDate(Date(note.date))
-                toolbar.title = getString(R.string.edit_note)
+                topAppBar.title = getString(R.string.edit_note)
                 swEvent.isChecked = args.note?.setEvent!!
             }
         } ?: kotlin.run {
