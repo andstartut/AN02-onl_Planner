@@ -23,17 +23,20 @@ class NoteRepository(
 
     suspend fun saveNote(note: Note) {
         withContext(Dispatchers.IO) {
-            notesDao.insertNote(
-                Note(
-                    id = note.id,
-                    title = note.title,
-                    date = note.date,
-                    setEvent = note.setEvent,
-                    accountName = dataStore.getAccountName()
-                )
+//            notesDao.insertNote(
+//                Note(
+//                    id = note.id,
+//                    title = note.title,
+//                    date = note.date,
+//                    setEvent = note.setEvent,
+//                    accountName = dataStore.getAccountName()
+//                )
+//            )
+            val id = notesDao.insertNote(
+                note.copy(accountName = dataStore.getAccountName())
             )
             if (note.setEvent) {
-                notificationRepository.setNotification(note)
+                notificationRepository.setNotification(note.copy(id = id))
             }
         }
     }
@@ -46,7 +49,6 @@ class NoteRepository(
 
     suspend fun updateNote(note: Note) {
         withContext(Dispatchers.IO) {
-            notificationRepository.undoNotification(note)
             notesDao.updateNote(note)
             if (note.setEvent) {
                 notificationRepository.setNotification(note)
@@ -57,7 +59,6 @@ class NoteRepository(
     suspend fun deleteNote(note: Note) {
         withContext(Dispatchers.IO) {
             notesDao.deleteNote(note)
-            notificationRepository.undoNotification(note)
         }
     }
 
@@ -65,7 +66,6 @@ class NoteRepository(
         withContext(Dispatchers.IO) {
             notesDao.getNote(noteId).let { note ->
                 notesDao.deleteNote(note)
-                notificationRepository.undoNotification(note)
             }
         }
     }
@@ -79,7 +79,6 @@ class NoteRepository(
     suspend fun postponeNoteById(noteId: Long) {
         withContext(Dispatchers.IO) {
             notesDao.getNote(noteId).let { note ->
-                notificationRepository.undoNotification(note)
                 val postponedNote = notificationRepository.postponeNoteTimeByFiveMinutes(note)
                 notesDao.updateNote(postponedNote)
                 notificationRepository.setNotification(postponedNote)

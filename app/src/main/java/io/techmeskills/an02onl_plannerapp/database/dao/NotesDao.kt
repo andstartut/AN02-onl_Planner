@@ -21,7 +21,7 @@ abstract class NotesDao {
     @Query("SELECT * FROM notes")
     abstract fun getAllNotes(): List<Note>
 
-    @Query("SELECT * FROM notes WHERE id == :noteId")
+    @Query("SELECT * FROM notes WHERE id == :noteId LIMIT 1")
     abstract fun getNote(noteId: Long): Note
 
     @Query("SELECT * FROM notes ORDER BY id ASC")

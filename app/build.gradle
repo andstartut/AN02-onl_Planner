@@ -83,9 +83,9 @@ dependencies {
     //TIME & DATA PICKER
     implementation "com.github.florent37:singledateandtimepicker:2.2.7"
 
-    kapt "androidx.room:room-compiler:2.2.6"
-    implementation "androidx.room:room-runtime:2.2.6"
-    implementation "androidx.room:room-ktx:2.2.6"
+    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "androidx.room:room-runtime:2.3.0"
+    implementation "androidx.room:room-ktx:2.3.0"
 
     //noinspection GradleCompatible
     implementation "com.android.support:design:29.1.0"

@@ -16,6 +16,7 @@ import io.techmeskills.an02onl_plannerapp.databinding.FragmentAccountSettingsBin
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.util.*
 
 class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBinding>(R.layout.fragment_account_settings) {
 
@@ -25,6 +26,16 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        fun getImageId(): Int {
+            val random = Random().nextInt(3)
+            return context?.resources!!.getIdentifier(
+                "drawable/toolbar_background_$random",
+                null,
+                context?.packageName
+            )
+        }
+        viewBinding.ivToolbarBackground.setImageResource(getImageId())
 
         viewModel.currentAccountNameLD.observe(this.viewLifecycleOwner) { accountName ->
             viewBinding.tvName.text = accountName

@@ -45,9 +45,8 @@ class NotificationReceiver : BroadcastReceiver() {
                 .setContentTitle(title)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                .addAction(R.drawable.baseline_delete_20, "I did it", deleteAction(context, id))
                 .addAction(deleteAction(context, id))
-                .addAction(R.drawable.baseline_delete_24, "Set new time", postponedNote(context))
+                .addAction(postponedNote(context, id))
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setVibrate(longArrayOf(1000, 1000))
                 .setAutoCancel(true)
@@ -60,17 +59,22 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     @KoinApiExtension
-    private fun postponedNote(context: Context): PendingIntent {
-        val postponeIntent = Intent(context, ActionService::class.java).apply {
-            this.action = ACTION_POSTPONE
-            this.putExtra(ACTION_POSTPONE, true)
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            1010,
+    private fun postponedNote(context: Context, id: Long): NotificationCompat.Action {
+        val postponeIntent =
+            Intent(context.applicationContext, ActionService::class.java)
+        postponeIntent.action = ACTION_POSTPONE
+        postponeIntent.putExtra(NotificationRepository.INTENT_NOTE_ID, id)
+        val postponePendingIntent = PendingIntent.getService(
+            context.applicationContext,
+            1111,
             postponeIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
+        return NotificationCompat.Action.Builder(
+            R.drawable.baseline_delete_20,
+            "Postpone",
+            postponePendingIntent
+        ).build()
     }
 
     @KoinApiExtension
@@ -81,7 +85,7 @@ class NotificationReceiver : BroadcastReceiver() {
         deleteIntent.putExtra(NotificationRepository.INTENT_NOTE_ID, id)
         val deletePendingIntent = PendingIntent.getService(
             context.applicationContext,
-            1111,
+            1010,
             deleteIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -93,25 +97,13 @@ class NotificationReceiver : BroadcastReceiver() {
         ).build()
     }
 
-//    private fun deleteAction(context: Context, id: Long): PendingIntent {
-//        val deleteIntent = Intent(context.applicationContext, ActionService::class.java)
-//        deleteIntent.action = ACTION_DELETE
-//        deleteIntent.putExtra(NotificationRepository.INTENT_NOTE_ID, id)
-//        return PendingIntent.getBroadcast(
-//            context.applicationContext,
-//            1011,
-//            deleteIntent,
-//            PendingIntent.FLAG_UPDATE_CURRENT
-//        )
-//    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createChannel(notificationManager: NotificationManager, context: Context) {
         if (notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 context.getString(NOTIFICATION_CHANNEL_NAME),
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
         }

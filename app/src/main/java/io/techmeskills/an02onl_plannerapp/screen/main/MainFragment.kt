@@ -1,11 +1,14 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -15,11 +18,13 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.techmeskills.an02onl_plannerapp.R
+import io.techmeskills.an02onl_plannerapp.animation.FabReveal
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
 
@@ -36,13 +41,33 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     )
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
-        viewBinding.toolbar.setPadding(0, 0, 0, 0)
     }
 
     @ExperimentalCoroutinesApi
-    @SuppressLint("StringFormatMatches", "ShowToast")
+    @SuppressLint("StringFormatMatches", "ShowToast", "ResourceType")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        fun getImageId(): Int {
+            val random = Random().nextInt(3)
+            return context?.resources!!.getIdentifier(
+                "drawable/toolbar_background_$random",
+                null,
+                context?.packageName
+            )
+        }
+
+        val animation = AlphaAnimation(0.1F, 1F)
+        animation.duration = 400
+        animation.startOffset = 100
+        viewBinding.ivToolbarBackground.setImageResource(getImageId())
+        viewBinding.ivToolbarBackground.startAnimation(
+            animation
+        )
+
+        val menu = viewBinding.topAppBar.menu
+        val itemSpinner: MenuItem = menu.getItem(TOOLBAR_SPINNER_ITEM)
+        val spinner = itemSpinner.actionView as Spinner
 
         viewBinding.recyclerView.adapter = adapter
         viewBinding.recyclerView.adapter!!.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -52,22 +77,35 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         })
 
         viewModel.spinnerDataLD.observe(this.viewLifecycleOwner) {
-
             val adapterSpinner = ArrayAdapter(
                 this.requireContext(), android.R.layout.simple_spinner_item, it.first
             )
             adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            viewBinding.spinner.adapter = adapterSpinner
-            viewBinding.spinner.setSelection(it.second)
+            spinner.adapter = adapterSpinner
+            spinner.setSelection(it.second)
         }
-
-        viewBinding.spinner.onItemSelectedListener = object :
+        spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, p1: View?, positionInList: Int, p3: Long) {
-                viewModel.changeAccount(viewBinding.spinner.selectedItem.toString(), positionInList)
+                viewModel.changeAccount(spinner.selectedItem.toString(), positionInList)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
+
+
+        viewBinding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.toolbar_menu_accountSettings -> {
+                    findNavController().navigateSafe(MainFragmentDirections.toAccountSettingsFragment())
+                    true
+                }
+                R.id.toolbar_menu_cloud -> {
+                    showCloudDialog()
+                    true
+                }
+                else -> false
             }
         }
 
@@ -95,18 +133,15 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         ItemTouchHelper(swipeHandler).attachToRecyclerView(viewBinding.recyclerView)
 
         viewBinding.btnAddNew.setOnClickListener {
-            findNavController()
-                .navigateSafe(
-                    MainFragmentDirections.toNoteDetailsFragment(null)
-                )
-        }
+            FabReveal(viewBinding.btnAddNew, requireView()).apply {
+                start(transaction = {
+                    findNavController()
+                        .navigateSafe(
+                            MainFragmentDirections.toNoteDetailsFragment(null)
+                        )
+                })
+            }
 
-        viewBinding.btnAccountSetting.setOnClickListener {
-            findNavController().navigateSafe(MainFragmentDirections.toAccountSettingsFragment())
-        }
-
-        viewBinding.btnCloud.setOnClickListener {
-            showCloudDialog()
         }
     }
 
@@ -124,6 +159,10 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 viewModel.exportNotes()
                 dialog.cancel()
             }.show()
+    }
+
+    companion object {
+        const val TOOLBAR_SPINNER_ITEM = 0
     }
 }
 
