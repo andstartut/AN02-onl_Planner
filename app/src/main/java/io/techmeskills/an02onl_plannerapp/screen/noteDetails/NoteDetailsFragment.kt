@@ -66,6 +66,7 @@ class NoteDetailsFragment :
         viewBinding.swEvent.setOnCheckedChangeListener { _, switchCondition ->
             if (switchCondition) {
                 setEventCondition = switchCondition
+                dateTimePicker()
                 viewModel.date.observe(this.viewLifecycleOwner) { date ->
                     if (date.time < Date().time && count == 0) {
                         count++

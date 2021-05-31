@@ -22,6 +22,7 @@ import io.techmeskills.an02onl_plannerapp.animation.FabReveal
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
+import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -41,6 +42,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     )
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
+        viewBinding.topAppBar.setVerticalMargin(marginTop = top)
     }
 
     @ExperimentalCoroutinesApi
