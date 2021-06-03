@@ -83,6 +83,15 @@
         app:layout_constraintStart_toEndOf="@id/swEvent"
         app:layout_constraintTop_toBottomOf="@id/etTypeNote" />
 
+    <com.techmeskills.mydatepicker.DatePickerView
+        android:id="@+id/dateTimePicker"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/btnConfirm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/swEvent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnConfirm"
@@ -94,6 +103,6 @@
         app:backgroundTint="@color/note_yellow_rich"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/swEvent" />
+        app:layout_constraintTop_toBottomOf="@id/dateTimePicker" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

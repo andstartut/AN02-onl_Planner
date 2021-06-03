@@ -1,2 +1,4 @@
+include ':myDateAndTimePicker'
+include ':app:myTimeAndDatePicker'
 rootProject.name = "AN02ONL_PlannerApp"
 include ':app'

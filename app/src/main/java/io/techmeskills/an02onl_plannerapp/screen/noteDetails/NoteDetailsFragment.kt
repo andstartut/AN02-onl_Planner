@@ -10,10 +10,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog
+import com.techmeskills.mydatepicker.DateAdapter.DateViewHolder.Companion.dayFormatter
+import com.techmeskills.mydatepicker.DatePickerView
+import com.techmeskills.mydatepicker.ScreenUtils
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
@@ -74,13 +79,36 @@ class NoteDetailsFragment :
                 }
                 viewBinding.tvEventDate.setTextColor(ContextCompat.getColor(view.context, R.color.note_yellow_rich))
                 viewBinding.tvEventDate.setOnClickListener {
-                    dateTimePicker()
+//                    dateTimePicker()
+                    viewBinding.dateTimePicker.visibility = View.VISIBLE
                 }
             } else {
                 setEventCondition = switchCondition
                 viewBinding.tvEventDate.setTextColor(ContextCompat.getColor(view.context, R.color.gray))
                 viewBinding.tvEventDate.setOnClickListener {
                 }
+            }
+        }
+
+        val selectedDate: Calendar = Calendar.getInstance().apply { time = Date() }
+
+        viewBinding.dateTimePicker.onDateChangeCallback = object : DatePickerView.DateChangeListener {
+            override fun onDateChanged(date: Date) {
+                selectedDate.time = date
+
+            }
+        }
+        viewBinding.dateTimePicker.onHourChangeCallback = object : DatePickerView.HourChangeListener {
+            override fun onHourChanged(hour: Int) {
+                selectedDate.set(Calendar.HOUR_OF_DAY, hour)
+
+            }
+        }
+
+        viewBinding.dateTimePicker.onMinuteChangeCallback = object : DatePickerView.MinuteChangeListener {
+            override fun onMinuteChanged(minute: Int) {
+                selectedDate.set(Calendar.MINUTE, minute)
+
             }
         }
 
@@ -107,7 +135,7 @@ class NoteDetailsFragment :
                                 id = it.id,
                                 accountName = it.accountName,
                                 title = viewBinding.etTypeNote.text.toString(),
-                                date = date.time,
+                                date = selectedDate.time.time,
                                 setEvent = setEventCondition
                             )
                         )
@@ -116,7 +144,7 @@ class NoteDetailsFragment :
                             Note(
                                 accountName = "",
                                 title = viewBinding.etTypeNote.text.toString(),
-                                date = date.time,
+                                date = selectedDate.time.time,
                                 setEvent = setEventCondition
                             )
                         )
@@ -138,23 +166,23 @@ class NoteDetailsFragment :
         viewBinding.btnConfirm.setPadding(0, 10, 0, 10)
     }
 
-    @SuppressLint("ResourceAsColor")
-    private fun dateTimePicker() {
-        SingleDateAndTimePickerDialog.Builder(context)
-            .minutesStep(1)
-            .defaultDate(Date())
-            .displayHours(true)
-            .displayMinutes(true)
-            .displayDays(true)
-            .mainColor(ContextCompat.getColor(requireContext(), R.color.note_yellow_rich))
-            .mustBeOnFuture()
-            .bottomSheet()
-            .curved()
-            .listener {
-                viewModel.setDate(it)
-            }
-            .display()
-    }
+//    @SuppressLint("ResourceAsColor")
+//    private fun dateTimePicker() {
+//        SingleDateAndTimePickerDialog.Builder(context)
+//            .minutesStep(1)
+//            .defaultDate(Date())
+//            .displayHours(true)
+//            .displayMinutes(true)
+//            .displayDays(true)
+//            .mainColor(ContextCompat.getColor(requireContext(), R.color.note_yellow_rich))
+//            .mustBeOnFuture()
+//            .bottomSheet()
+//            .curved()
+//            .listener {
+//                viewModel.setDate(it)
+//            }
+//            .display()
+//    }
 
     override val backPressedCallback: OnBackPressedCallback
         get() = object : OnBackPressedCallback(true) {
