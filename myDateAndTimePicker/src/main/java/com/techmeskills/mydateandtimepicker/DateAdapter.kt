@@ -1,27 +1,26 @@
-package com.techmeskills.mydatepicker
+package com.techmeskills.mydateandtimepicker
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.techmeskills.mydateandtimepicker.R
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DateAdapter(
-        private val items: List<Date>
+    private val items: List<Date>,
+    private val setCurrentDate: Date?
 ) : RecyclerView.Adapter<DateAdapter.DateViewHolder>() {
 //    private var selectedPosition: Int? = null
-    var defaultDate: Date? = null
     var selectedDay: Date? = null
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DateViewHolder {
         return DateViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.date_picker_item, parent, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.date_picker_item, parent, false),
+            setCurrentDate
         )
     }
 
@@ -42,13 +41,16 @@ class DateAdapter(
     }
 
     class DateViewHolder(
-            itemView: View,
+        itemView: View,
+        setCurrentDate: Date?,
 //            onSelect: (Int) -> Unit,
 //            selectedPosition: Int?
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvMonth = itemView.findViewById<TextView>(R.id.tvMonth)
         private val tvDay = itemView.findViewById<TextView>(R.id.tvDay)
         private val tvWeekDay = itemView.findViewById<TextView>(R.id.tvWeekDay)
+
+
 
 //        init {
 //            itemView.setOnClickListener {
@@ -74,6 +76,9 @@ class DateAdapter(
         }
 
         companion object {
+            @SuppressLint("ConstantLocale")
+            val dateFormatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+
             @SuppressLint("ConstantLocale")
             val monthFormatter = SimpleDateFormat("MMM", Locale.getDefault())
 

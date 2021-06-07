@@ -1,4 +1,4 @@
-package com.techmeskills.mydatepicker
+package com.techmeskills.mydateandtimepicker
 
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager

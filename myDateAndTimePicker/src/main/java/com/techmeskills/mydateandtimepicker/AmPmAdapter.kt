@@ -8,18 +8,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-class TimeAdapter(
+class AmPmAdapter(
     private var items: List<Int>,
     private val setCurrentDate: Date?
-) : RecyclerView.Adapter<TimeAdapter.TimeViewHolder>() {
+) : RecyclerView.Adapter<AmPmAdapter.AmPmViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
-        return TimeViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmPmViewHolder {
+        return AmPmViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.time_picker_item, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: TimeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: AmPmViewHolder, position: Int) {
         holder.bind(items[position])
     }
 
@@ -27,15 +27,18 @@ class TimeAdapter(
         return items.size
     }
 
-    class TimeViewHolder(
+    class AmPmViewHolder(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
-        private val tvHour = itemView.findViewById<TextView>(R.id.tvTime)
+        private val tvAmPm = itemView.findViewById<TextView>(R.id.tvTime)
 
-        @SuppressLint("ResourceAsColor")
-        fun bind(minute: Int) {
-            val min = minute.toString().padStart(2, '0')
-            tvHour.text = min
+        @SuppressLint("ResourceAsColor", "SetTextI18n")
+        fun bind(amPm: Int) {
+            if (amPm == 0) {
+                tvAmPm.text = "AM"
+            } else {
+                tvAmPm.text = "PM"
+            }
         }
     }
 

@@ -3,28 +3,21 @@ package io.techmeskills.an02onl_plannerapp.screen.noteDetails
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.transition.TransitionInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog
-import com.techmeskills.mydatepicker.DateAdapter.DateViewHolder.Companion.dayFormatter
-import com.techmeskills.mydatepicker.DatePickerView
-import com.techmeskills.mydatepicker.ScreenUtils
+import com.techmeskills.mydateandtimepicker.DateAndTimePickerView
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -77,38 +70,38 @@ class NoteDetailsFragment :
                         viewModel.setDate(Date())
                     }
                 }
+                viewBinding.dateTimePicker.visibility = View.VISIBLE
                 viewBinding.tvEventDate.setTextColor(ContextCompat.getColor(view.context, R.color.note_yellow_rich))
-                viewBinding.tvEventDate.setOnClickListener {
-//                    dateTimePicker()
-                    viewBinding.dateTimePicker.visibility = View.VISIBLE
-                }
             } else {
                 setEventCondition = switchCondition
                 viewBinding.tvEventDate.setTextColor(ContextCompat.getColor(view.context, R.color.gray))
-                viewBinding.tvEventDate.setOnClickListener {
-                }
+                viewBinding.dateTimePicker.visibility = View.GONE
             }
         }
 
         val selectedDate: Calendar = Calendar.getInstance().apply { time = Date() }
 
-        viewBinding.dateTimePicker.onDateChangeCallback = object : DatePickerView.DateChangeListener {
+        viewBinding.dateTimePicker.onDateChangeCallback = object : DateAndTimePickerView.DateChangeListener {
             override fun onDateChanged(date: Date) {
                 selectedDate.time = date
-
             }
         }
-        viewBinding.dateTimePicker.onHourChangeCallback = object : DatePickerView.HourChangeListener {
+        viewBinding.dateTimePicker.onHourChangeCallback = object : DateAndTimePickerView.HourChangeListener {
             override fun onHourChanged(hour: Int) {
                 selectedDate.set(Calendar.HOUR_OF_DAY, hour)
-
+                Toast.makeText(context, selectedDate?.time.time.toString(), Toast.LENGTH_LONG ).show()
             }
         }
-
-        viewBinding.dateTimePicker.onMinuteChangeCallback = object : DatePickerView.MinuteChangeListener {
+        viewBinding.dateTimePicker.onMinuteChangeCallback = object : DateAndTimePickerView.MinuteChangeListener {
             override fun onMinuteChanged(minute: Int) {
                 selectedDate.set(Calendar.MINUTE, minute)
-
+Toast.makeText(context, selectedDate.time.time.toString(), Toast.LENGTH_LONG ).show()
+            }
+        }
+        viewBinding.dateTimePicker.onAmPmChangeCallback = object : DateAndTimePickerView.AmPmChangeListener {
+            override fun onAmPmChanged(amPm: Int) {
+                selectedDate.set(Calendar.AM_PM, amPm)
+                Toast.makeText(context, dateFormatter.format(selectedDate.time), Toast.LENGTH_LONG ).show()
             }
         }
 

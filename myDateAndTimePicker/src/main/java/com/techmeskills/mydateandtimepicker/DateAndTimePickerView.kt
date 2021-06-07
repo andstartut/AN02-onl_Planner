@@ -1,17 +1,13 @@
-package com.techmeskills.mydatepicker
+package com.techmeskills.mydateandtimepicker
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.techmeskills.mydateandtimepicker.R
 import java.util.*
 
-class DatePickerView @JvmOverloads constructor(
+class DateAndTimePickerView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
     defStyle: Int = 0
@@ -26,6 +22,9 @@ class DatePickerView @JvmOverloads constructor(
     private val minutesRecyclerView: RecyclerView by lazy {
         findViewById(R.id.rvMinutes)
     }
+    private val amPmRecyclerView: RecyclerView by lazy {
+        findViewById(R.id.rvAmPm)
+    }
 //    private val btDate: Button by lazy {
 //        findViewById(R.id.btnDate)
 //    }
@@ -33,8 +32,10 @@ class DatePickerView @JvmOverloads constructor(
     var onDateChangeCallback: DateChangeListener? = null
     var onHourChangeCallback: HourChangeListener? = null
     var onMinuteChangeCallback: MinuteChangeListener? = null
+    var onAmPmChangeCallback: AmPmChangeListener? = null
 
-    var days = 31
+    var days = 365
+    private var setCurrentDate: Date? = null
 
 //    val selectedDate: Date?
 //        get() {
@@ -49,10 +50,12 @@ class DatePickerView @JvmOverloads constructor(
         dateRecyclerView.setPadding(0, padding, 0, padding)
         hoursRecyclerView.setPadding(0, padding, 0, padding)
         minutesRecyclerView.setPadding(0, padding, 0, padding)
+        amPmRecyclerView.setPadding(0, padding, 0, padding)
 
         dateRecyclerView.setHasFixedSize(true)
         hoursRecyclerView.setHasFixedSize(true)
         minutesRecyclerView.setHasFixedSize(true)
+        amPmRecyclerView.setHasFixedSize(true)
 
         dateRecyclerView.layoutManager = SliderLayoutManager(context).apply {
             callback = object : SliderLayoutManager.OnItemSelectedListener {
@@ -75,9 +78,17 @@ class DatePickerView @JvmOverloads constructor(
                 }
             }
         }
-        dateRecyclerView.adapter = DateAdapter(generateDays(days))
-        hoursRecyclerView.adapter = TimeAdapter(hoursList())
-        minutesRecyclerView.adapter = TimeAdapter(minutesList())
+        amPmRecyclerView.layoutManager = SliderLayoutManager(context).apply {
+            callback = object : SliderLayoutManager.OnItemSelectedListener {
+                override fun onItemSelected(layoutPosition: Int) {
+                    onAmPmChangeCallback?.onAmPmChanged(amPmList()[layoutPosition])
+                }
+            }
+        }
+        dateRecyclerView.adapter = DateAdapter(generateDays(days), setCurrentDate)
+        hoursRecyclerView.adapter = TimeAdapter(hoursList(), setCurrentDate)
+        minutesRecyclerView.adapter = TimeAdapter(minutesList(), setCurrentDate)
+        amPmRecyclerView.adapter = AmPmAdapter(amPmList(), setCurrentDate)
     }
 
     private fun generateDays(days: Int): List<Date> {
@@ -92,7 +103,7 @@ class DatePickerView @JvmOverloads constructor(
         return list
     }
 
-    private fun hoursList(): MutableList<Int> {
+    private fun hoursList(): List<Int> {
         val list = arrayListOf<Int>()
         for (i in 1..12) {
             list.add(i)
@@ -100,9 +111,17 @@ class DatePickerView @JvmOverloads constructor(
         return list
     }
 
-    private fun minutesList(): MutableList<Int> {
+    private fun minutesList(): List<Int> {
         val list = arrayListOf<Int>()
         for (i in 0..59) {
+            list.add(i)
+        }
+        return list
+    }
+
+    private fun amPmList(): List<Int> {
+        val list = arrayListOf<Int>()
+        for (i in 0..1) {
             list.add(i)
         }
         return list
@@ -118,6 +137,14 @@ class DatePickerView @JvmOverloads constructor(
 
     interface MinuteChangeListener {
         fun onMinuteChanged(time: Int)
+    }
+
+    interface AmPmChangeListener {
+        fun onAmPmChanged(time: Int)
+    }
+
+    fun setCurrentDate(date: Date) {
+        setCurrentDate = date
     }
 }
 
