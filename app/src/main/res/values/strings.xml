@@ -9,6 +9,7 @@
     <string name="no">No</string>
     <string name="login">Login</string>
     <string name="cloud">Cloud</string>
+    <string name="action_search">Action Search</string>
     <string name="confirm">Confirm</string>
     <string name="create">Create</string>
     <string name="create_new">Create new</string>
@@ -32,4 +33,5 @@
     <string name="no_date">no date</string>
     <string name="set_event">Set event</string>
     <string name="actionbar_spinner">ActionBar Spinner</string>
+    <string name="search_hint">Search note</string>
 </resources>

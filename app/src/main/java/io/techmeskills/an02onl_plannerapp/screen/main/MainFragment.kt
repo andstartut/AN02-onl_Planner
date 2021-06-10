@@ -1,14 +1,17 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog.show
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AlphaAnimation
-import android.view.animation.AnimationUtils
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import android.widget.*
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -22,11 +25,12 @@ import io.techmeskills.an02onl_plannerapp.animation.FabReveal
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
+import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main) {
+class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main), SearchView.OnQueryTextListener {
 
     override val viewBinding: FragmentMainBinding by viewBinding()
 
@@ -41,6 +45,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     )
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
+        viewBinding.topAppBar.setVerticalMargin(marginTop = top)
     }
 
     @ExperimentalCoroutinesApi
@@ -88,12 +93,12 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, p1: View?, positionInList: Int, p3: Long) {
                 viewModel.changeAccount(spinner.selectedItem.toString(), positionInList)
+                adapter.notifyDataSetChanged()
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
         }
-
 
         viewBinding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -103,6 +108,25 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                 }
                 R.id.toolbar_menu_cloud -> {
                     showCloudDialog()
+                    true
+                }
+                R.id.toolbar_menu_search -> {
+                    val searchItem = menu.findItem(R.id.toolbar_menu_search)
+                    val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+                    val searchView: SearchView = searchItem?.actionView as SearchView
+                    searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
+                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+                        override fun onQueryTextSubmit(query: String): Boolean {
+                            adapter.filter.filter(query)
+                            return false
+                        }
+
+                        override fun onQueryTextChange(s: String): Boolean {
+                            adapter.filter.filter(s)
+                            return true
+                        }
+                    })
                     true
                 }
                 else -> false
@@ -163,6 +187,24 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
 
     companion object {
         const val TOOLBAR_SPINNER_ITEM = 0
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        getMenuInflater().inflate(R.menu.top_app_bar, menu)
+
+        val searchItem = menu.findItem(R.id.toolbar_menu_search)
+        val searchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(this)
+
+//        return true
+    }
+
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        TODO("Not yet implemented")
     }
 }
 
