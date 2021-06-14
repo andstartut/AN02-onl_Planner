@@ -13,6 +13,7 @@ class NoteDetailsViewModel(
 ) : CoroutineViewModel() {
 
     var date = MutableLiveData<Date>()
+    var color = MutableLiveData<Int>()
 
     @ExperimentalCoroutinesApi
     fun addNote(note: Note) {
@@ -30,6 +31,12 @@ class NoteDetailsViewModel(
     fun setDate(setDate: Date) {
         launch {
             date.postValue(setDate)
+        }
+    }
+
+    fun setColor(setColor: Int) {
+        launch {
+            color.postValue(setColor)
         }
     }
 }

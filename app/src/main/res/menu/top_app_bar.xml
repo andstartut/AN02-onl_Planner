@@ -19,6 +19,16 @@
         android:title="@string/cloud"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/toolbar_menu_sort_by_date"
+        android:icon="@drawable/baseline_sort_black_24"
+        android:title="@string/actionbar_sort_by_date"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/toolbar_menu_sort_by_title"
+        android:icon="@drawable/baseline_sort_black_24"
+        android:title="@string/actionbar_sort_by_title"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/toolbar_menu_accountSettings"
         android:icon="@drawable/baseline_account_circle_24"
         android:title="@string/account_settings"

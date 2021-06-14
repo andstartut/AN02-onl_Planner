@@ -24,4 +24,9 @@
     <color name="note_pink">#ff65a3</color>
     <color name="note_pink_lite">#ff7eb9</color>
     <color name="note_blue_lite">#40a7e3</color>
+    <color name="note_background_yellow_lite">#fff69b</color>
+    <color name="note_background_pink_lite">#f6c2d9</color>
+    <color name="note_background_green_lite">#bcdfc9</color>
+    <color name="note_background_blue_lite">#a1c8e9</color>
+    <color name="note_background_purple_lite">#e4dae2</color>
 </resources>

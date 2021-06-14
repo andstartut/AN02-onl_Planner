@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AmPmAdapter(
-    private var items: List<Int>,
-    private val setCurrentDate: Date?
+    private var items: List<Date>
 ) : RecyclerView.Adapter<AmPmAdapter.AmPmViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AmPmViewHolder {
         return AmPmViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.time_picker_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.time_picker_item, parent, false)
         )
     }
 
@@ -28,18 +28,22 @@ class AmPmAdapter(
     }
 
     class AmPmViewHolder(
-            itemView: View
+        itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvAmPm = itemView.findViewById<TextView>(R.id.tvTime)
 
         @SuppressLint("ResourceAsColor", "SetTextI18n")
-        fun bind(amPm: Int) {
-            if (amPm == 0) {
-                tvAmPm.text = "AM"
-            } else {
-                tvAmPm.text = "PM"
-            }
+        fun bind(date: Date) {
+//            if (amPm == 0) {
+//                tvAmPm.text = "AM"
+//            } else {
+//                tvAmPm.text = "PM"
+//            }
+            tvAmPm.text = amPmFormatter.format(date)
         }
+
+        @SuppressLint("ConstantLocale")
+        val amPmFormatter = SimpleDateFormat("a", Locale.getDefault())
     }
 
 }

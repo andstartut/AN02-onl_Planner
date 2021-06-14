@@ -1,7 +1,6 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
 import android.annotation.SuppressLint
-import android.app.ProgressDialog.show
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
@@ -53,22 +52,11 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fun getImageId(): Int {
-            val random = Random().nextInt(3)
-            return context?.resources!!.getIdentifier(
-                "drawable/toolbar_background_$random",
-                null,
-                context?.packageName
-            )
-        }
-
         val animation = AlphaAnimation(0.1F, 1F)
         animation.duration = 400
         animation.startOffset = 100
         viewBinding.ivToolbarBackground.setImageResource(getImageId())
-        viewBinding.ivToolbarBackground.startAnimation(
-            animation
-        )
+        viewBinding.ivToolbarBackground.startAnimation(animation)
 
         val menu = viewBinding.topAppBar.menu
         val itemSpinner: MenuItem = menu.getItem(TOOLBAR_SPINNER_ITEM)
@@ -129,6 +117,14 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     })
                     true
                 }
+                R.id.toolbar_menu_sort_by_date -> {
+                    viewModel.switchOrderingByDate()
+                    true
+                }
+                R.id.toolbar_menu_sort_by_title -> {
+                    viewModel.switchOrderingByTitle()
+                    true
+                }
                 else -> false
             }
         }
@@ -169,6 +165,15 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         }
     }
 
+    private fun getImageId(): Int {
+        val random = Random().nextInt(3)
+        return context?.resources!!.getIdentifier(
+            "drawable/toolbar_background_$random",
+            null,
+            context?.packageName
+        )
+    }
+
     @ExperimentalCoroutinesApi
     private fun showCloudDialog() {
         MaterialAlertDialogBuilder(requireContext())
@@ -190,13 +195,9 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        getMenuInflater().inflate(R.menu.top_app_bar, menu)
-
         val searchItem = menu.findItem(R.id.toolbar_menu_search)
         val searchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(this)
-
-//        return true
     }
 
     override fun onQueryTextSubmit(p0: String?): Boolean {

@@ -1,10 +1,14 @@
 package com.techmeskills.mydateandtimepicker
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.time.Month
 import java.util.*
 
 class DateAndTimePickerView @JvmOverloads constructor(
@@ -25,77 +29,107 @@ class DateAndTimePickerView @JvmOverloads constructor(
     private val amPmRecyclerView: RecyclerView by lazy {
         findViewById(R.id.rvAmPm)
     }
-//    private val btDate: Button by lazy {
-//        findViewById(R.id.btnDate)
-//    }
 
-    var onDateChangeCallback: DateChangeListener? = null
-    var onHourChangeCallback: HourChangeListener? = null
-    var onMinuteChangeCallback: MinuteChangeListener? = null
-    var onAmPmChangeCallback: AmPmChangeListener? = null
+    private var dateAdapter: DateAdapter
+    private var hoursAdapter: TimeAdapter
+    private var minutesAdapter: TimeAdapter
+    private var amPmAdapter: AmPmAdapter
 
-    var days = 365
-    private var setCurrentDate: Date? = null
+    private var days = 365
 
-//    val selectedDate: Date?
-//        get() {
-//            return (dateRecyclerView.adapter as DateAdapter).selectedDay
-//        }
+    private var selectedDate: Calendar = Calendar.getInstance().apply { time = Date() }
 
     init {
         View.inflate(context, R.layout.date_picker_view, this)
-
-//        val padding: Int = ScreenUtils.getScreenHeight(this.context) / 2 - ScreenUtils.dpToPx(this, 70)
-        val padding = 285
-        dateRecyclerView.setPadding(0, padding, 0, padding)
-        hoursRecyclerView.setPadding(0, padding, 0, padding)
-        minutesRecyclerView.setPadding(0, padding, 0, padding)
-        amPmRecyclerView.setPadding(0, padding, 0, padding)
 
         dateRecyclerView.setHasFixedSize(true)
         hoursRecyclerView.setHasFixedSize(true)
         minutesRecyclerView.setHasFixedSize(true)
         amPmRecyclerView.setHasFixedSize(true)
 
-        dateRecyclerView.layoutManager = SliderLayoutManager(context).apply {
+        dateAdapter = DateAdapter(generateDays(days))
+        hoursAdapter = TimeAdapter(hoursList())
+        minutesAdapter = TimeAdapter(minutesList())
+        amPmAdapter = AmPmAdapter(amPmList())
+
+        dateRecyclerView.layoutManager = SliderLayoutManager(context, dateAdapter.itemCount).apply {
             callback = object : SliderLayoutManager.OnItemSelectedListener {
                 override fun onItemSelected(layoutPosition: Int) {
-                    onDateChangeCallback?.onDateChanged(generateDays(days)[layoutPosition])
+                    val getDate = generateDays(days)[layoutPosition]
+                    val year = yearFormatter.format(getDate).toInt()
+                    val month = monthFormatter.format(getDate).toInt() - 1
+                    val day = dayFormatter.format(getDate).toInt()
+                    selectedDate.set(
+                        year, month, day
+                    )
                 }
             }
         }
-        hoursRecyclerView.layoutManager = SliderLayoutManager(context).apply {
+
+        hoursRecyclerView.layoutManager = SliderLayoutManager(context, hoursAdapter.itemCount).apply {
             callback = object : SliderLayoutManager.OnItemSelectedListener {
                 override fun onItemSelected(layoutPosition: Int) {
-                    onHourChangeCallback?.onHourChanged(hoursList()[layoutPosition])
+                    selectedDate.set(Calendar.HOUR_OF_DAY, hourFormatter.format(hoursList()[layoutPosition]).toInt())
                 }
             }
         }
-        minutesRecyclerView.layoutManager = SliderLayoutManager(context).apply {
+        minutesRecyclerView.layoutManager = SliderLayoutManager(context, minutesAdapter.itemCount).apply {
             callback = object : SliderLayoutManager.OnItemSelectedListener {
                 override fun onItemSelected(layoutPosition: Int) {
-                    onMinuteChangeCallback?.onMinuteChanged(minutesList()[layoutPosition])
+                    selectedDate.set(Calendar.MINUTE, minutesFormatter.format(minutesList()[layoutPosition]).toInt())
                 }
             }
         }
-        amPmRecyclerView.layoutManager = SliderLayoutManager(context).apply {
+        amPmRecyclerView.layoutManager = SliderLayoutManager(context, amPmAdapter.itemCount).apply {
             callback = object : SliderLayoutManager.OnItemSelectedListener {
                 override fun onItemSelected(layoutPosition: Int) {
-                    onAmPmChangeCallback?.onAmPmChanged(amPmList()[layoutPosition])
+                    val amPm = amPmList()[layoutPosition]
+                    selectedDate.set(Calendar.AM_PM, if (amPmFormatter.format(amPm).toLowerCase() == "am") 0 else 1)
                 }
             }
         }
-        dateRecyclerView.adapter = DateAdapter(generateDays(days), setCurrentDate)
-        hoursRecyclerView.adapter = TimeAdapter(hoursList(), setCurrentDate)
-        minutesRecyclerView.adapter = TimeAdapter(minutesList(), setCurrentDate)
-        amPmRecyclerView.adapter = AmPmAdapter(amPmList(), setCurrentDate)
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        val padding: Int = (bottom - top) / 2
+        dateRecyclerView.setPadding(0, padding, 0, padding)
+        hoursRecyclerView.setPadding(0, padding, 0, padding)
+        minutesRecyclerView.setPadding(0, padding, 0, padding)
+        amPmRecyclerView.setPadding(0, padding, 0, padding)
+        if (dateRecyclerView.adapter == null) {
+            dateRecyclerView.adapter = dateAdapter
+            hoursRecyclerView.adapter = hoursAdapter
+            minutesRecyclerView.adapter = minutesAdapter
+            amPmRecyclerView.adapter = amPmAdapter
+
+            dateRecyclerView.snapToFirstPosition()
+            hoursRecyclerView.snapToFirstPosition()
+            minutesRecyclerView.snapToFirstPosition()
+            amPmRecyclerView.snapToFirstPosition()
+        }
+    }
+
+    private fun RecyclerView.snapToFirstPosition() {
+        postDelayed(
+            {
+                val snapLayoutManager = this.layoutManager as SliderLayoutManager
+                val view = snapLayoutManager.findViewByPosition(0)!!
+                val snapDistance = snapLayoutManager.snapHelper.calculateDistanceToFinalSnap(
+                    snapLayoutManager, view
+                )!!
+                if (snapDistance[0] != 0 || snapDistance[1] != 0) {
+                    scrollBy(snapDistance[0], snapDistance[1])
+                }
+            }, 500
+        )
+
     }
 
     private fun generateDays(days: Int): List<Date> {
         val calendar = Calendar.getInstance()
         calendar.time = Date()
         val list = arrayListOf<Date>()
-
         for (i in 0..days) {
             list.add(calendar.time)
             calendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -103,48 +137,79 @@ class DateAndTimePickerView @JvmOverloads constructor(
         return list
     }
 
-    private fun hoursList(): List<Int> {
-        val list = arrayListOf<Int>()
-        for (i in 1..12) {
-            list.add(i)
+    private fun hoursList(): List<Date> {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        val list = arrayListOf<Date>()
+        for (i in 0..11) {
+            list.add(calendar.time)
+            calendar.add(Calendar.HOUR, 1)
         }
         return list
     }
 
-    private fun minutesList(): List<Int> {
-        val list = arrayListOf<Int>()
+    private fun minutesList(): List<Date> {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        val list = arrayListOf<Date>()
         for (i in 0..59) {
-            list.add(i)
+            list.add(calendar.time)
+            calendar.add(Calendar.MINUTE, 1)
         }
         return list
     }
 
-    private fun amPmList(): List<Int> {
-        val list = arrayListOf<Int>()
+    private fun amPmList(): List<Date> {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        val list = arrayListOf<Date>()
         for (i in 0..1) {
-            list.add(i)
+            list.add(calendar.time)
+            calendar.add(Calendar.AM_PM, 1)
         }
         return list
     }
+
+    fun getDate(): Date {
+        return if (selectedDate.time < Date()) {
+            Date()
+        } else{
+            selectedDate.time
+        }
+    }
+
+    @SuppressLint("ConstantLocale")
+    val monthFormatter = SimpleDateFormat("MM", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val dayFormatter = SimpleDateFormat("dd", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val hourFormatter = SimpleDateFormat("HH", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val minutesFormatter = SimpleDateFormat("mm", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val amPmFormatter = SimpleDateFormat("a", Locale.getDefault())
 
     interface DateChangeListener {
-        fun onDateChanged(date: Date)
+        fun onDateChanged(day: Int, month: Month, weekDay: DayOfWeek)
     }
 
     interface HourChangeListener {
-        fun onHourChanged(time: Int)
+        fun onHourChanged(hour: Int)
     }
 
     interface MinuteChangeListener {
-        fun onMinuteChanged(time: Int)
+        fun onMinuteChanged(minutes: Int)
     }
 
     interface AmPmChangeListener {
         fun onAmPmChanged(time: Int)
-    }
-
-    fun setCurrentDate(date: Date) {
-        setCurrentDate = date
     }
 }
 

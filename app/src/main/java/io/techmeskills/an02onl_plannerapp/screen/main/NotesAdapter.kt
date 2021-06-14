@@ -1,5 +1,6 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import okhttp3.internal.notifyAll
@@ -35,20 +37,21 @@ class NotesAdapter(
 
     private fun onItemClick(position: Int) = onClick(getItem(position))
 
-    override fun getItemCount(): Int {
-        return if (noteFilterList!!.isEmpty()) {
-            currentList.size
-        } else {
-            noteFilterList!!.size
-        }
-    }
+//    override fun getItemCount(): Int {
+//        return if (noteFilterList!!.isEmpty()) {
+//            currentList.size
+//        } else {
+//            noteFilterList!!.size
+//        }
+//    }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        if (noteFilterList!!.isEmpty()) {
-            holder.bind(getItem(position))
-        } else {
-            holder.bind(noteFilterList!![position])
-        }
+        holder.bind(getItem(position))
+//        if (noteFilterList!!.isEmpty()) {
+//            holder.bind(getItem(position))
+//        } else {
+//            holder.bind(noteFilterList!![position])
+//        }
     }
 
     override fun getFilter(): Filter {
@@ -84,7 +87,7 @@ class NotesAdapter(
     inner class NoteViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
-
+        private val cardView = itemView.findViewById<MaterialCardView>(R.id.cardView)
         private val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
         private val tvDate = itemView.findViewById<TextView>(R.id.tvDate)
         private val ivCloud = itemView.findViewById<ImageView>(R.id.ivCloud)
@@ -101,6 +104,7 @@ class NotesAdapter(
                 tvDate.text = dateFormatter.format(item.date)
             }
             ivCloud.isVisible = item.cloudSync
+            cardView.setCardBackgroundColor(Color.parseColor(item.color))
         }
     }
 }

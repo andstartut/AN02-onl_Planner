@@ -43,22 +43,12 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
 
         viewModel.checkAnyAccountExist.observe(this.viewLifecycleOwner) { isAccountListNotEmpty ->
             if (isAccountListNotEmpty.not()) {
-                findNavController().navigateSafe(
-                    AccountSettingsFragmentDirections.toNewAccountFragment(
-                        tbNewAccount = getString(R.string.create_new),
-                        etNewAccount = getString(R.string.create_new_account),
-                    )
-                )
+                switchToNewAccountFragment()
             }
         }
 
         viewBinding.btnCreate.setOnClickListener {
-            findNavController().navigateSafe(
-                AccountSettingsFragmentDirections.toNewAccountFragment(
-                    tbNewAccount = getString(R.string.create_new),
-                    etNewAccount = getString(R.string.create_new_account),
-                )
-            )
+            switchToNewAccountFragment()
         }
 
         viewBinding.btnEdit.setOnClickListener {
@@ -66,7 +56,7 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
                 viewBinding.btnCreate.visibility = View.GONE
                 viewBinding.btnDelete.visibility = View.GONE
 
-                viewModel.currentAccountNameLD.observe(this.viewLifecycleOwner) {accountName ->
+                viewModel.currentAccountNameLD.observe(this.viewLifecycleOwner) { accountName ->
                     viewBinding.etTypeAccountName.setText(accountName, TextView.BufferType.EDITABLE)
                 }
 
@@ -113,6 +103,13 @@ class AccountSettingsFragment : NavigationFragment<FragmentAccountSettingsBindin
             }
             .show()
     }
+
+    private fun switchToNewAccountFragment() = findNavController().navigateSafe(
+        AccountSettingsFragmentDirections.toNewAccountFragment(
+            tbNewAccount = getString(R.string.create_new),
+            etNewAccount = getString(R.string.create_new_account),
+        )
+    )
 
     override fun onInsetsReceived(top: Int, bottom: Int, hasKeyboard: Boolean) {
     }

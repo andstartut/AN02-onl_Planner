@@ -6,21 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
 import java.util.*
 
 class TimeAdapter(
-    private var items: List<Int>,
-    private val setCurrentDate: Date?
+    private var items: List<Date>
 ) : RecyclerView.Adapter<TimeAdapter.TimeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeViewHolder {
         return TimeViewHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.time_picker_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.time_picker_item, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: TimeViewHolder, position: Int) {
-        holder.bind(items[position])
+       val listPosition = position % items.size
+        holder.bind(items[listPosition], items.size > 12)
     }
 
     override fun getItemCount(): Int {
@@ -28,15 +29,23 @@ class TimeAdapter(
     }
 
     class TimeViewHolder(
-            itemView: View
+        itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
-        private val tvHour = itemView.findViewById<TextView>(R.id.tvTime)
+        private val tvTime = itemView.findViewById<TextView>(R.id.tvTime)
 
-        @SuppressLint("ResourceAsColor")
-        fun bind(minute: Int) {
-            val min = minute.toString().padStart(2, '0')
-            tvHour.text = min
+        fun bind(date: Date, isMinutes: Boolean) {
+            if (isMinutes) {
+                tvTime.text = minutesFormatter.format(date)
+            }
+            else {
+                tvTime.text = hourFormatter.format(date)
+            }
         }
-    }
 
+        @SuppressLint("ConstantLocale")
+        val hourFormatter = SimpleDateFormat("hh", Locale.getDefault())
+
+        @SuppressLint("ConstantLocale")
+        val minutesFormatter = SimpleDateFormat("mm", Locale.getDefault())
+    }
 }

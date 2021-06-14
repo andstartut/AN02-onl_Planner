@@ -25,5 +25,6 @@ data class Note(
     @ColumnInfo(index = true, name = "accountName")
     val accountName: String,
     val cloudSync: Boolean = false,
-    val setEvent: Boolean = false
+    val setEvent: Boolean = false,
+    val color: String
 ) : Parcelable
