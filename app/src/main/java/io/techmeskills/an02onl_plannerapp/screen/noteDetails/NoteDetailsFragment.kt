@@ -2,22 +2,24 @@ package io.techmeskills.an02onl_plannerapp.screen.noteDetails
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.transition.Transition
 import android.transition.TransitionInflater
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.ColorInt
+import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
+import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.transition.MaterialContainerTransform
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentNoteDetailsBinding
@@ -28,7 +30,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-@Suppress("NAME_SHADOWING")
 class NoteDetailsFragment :
     NavigationFragment<FragmentNoteDetailsBinding>(R.layout.fragment_note_details) {
 
@@ -42,7 +43,8 @@ class NoteDetailsFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = enterTransition(Color.TRANSPARENT, R.id.navHostFragment)
+        sharedElementReturnTransition = returnTransition(Color.TRANSPARENT, R.id.navHostFragment)
     }
 
     @SuppressLint("ResourceAsColor", "ShowToast", "ResourceType")
@@ -68,11 +70,11 @@ class NoteDetailsFragment :
                     }
                 }
 
-                val animation = AlphaAnimation(0.1F, 1F)
-                animation.duration = 500
-                animation.startOffset = 300
+//                val dateTimePickerAnimation = AlphaAnimation(0.1F, 1F)
+//                dateTimePickerAnimation.duration = 500
+//                dateTimePickerAnimation.startOffset = 300
                 viewBinding.dateTimePicker.visibility = View.VISIBLE
-                viewBinding.dateTimePicker.startAnimation(animation)
+//                viewBinding.dateTimePicker.startAnimation(dateTimePickerAnimation)
 
                 viewBinding.tvEventDate.setTextColor(ContextCompat.getColor(view.context, R.color.note_yellow_rich))
             } else {
@@ -86,6 +88,7 @@ class NoteDetailsFragment :
             viewBinding.run {
                 etTypeNote.setText(note.title)
                 viewModel.setDate(Date(note.date))
+//                viewBinding.dateTimePicker.setDate(dateFormatter.parse("25.07.2021 13:00")!!)
                 topAppBar.title = getString(R.string.edit_note)
                 swEvent.isChecked = args.note?.setEvent!!
                 setRadioButton(note.color)
@@ -93,14 +96,19 @@ class NoteDetailsFragment :
             }
         } ?: kotlin.run {
             viewModel.setDate(Date())
+//            viewBinding.dateTimePicker.setDate(dateFormatter.parse("25.07.2021 13:00")!!)
+            color = resources.getString(R.color.main_background)
+            viewModel.setColor(Color.parseColor(color))
+            setRadioButton(color)
         }
 
         viewModel.date.observe(this.viewLifecycleOwner) { date ->
             viewBinding.tvEventDate.text = dateFormatter.format(date)
         }
 
-        viewModel.color.observe(this.viewLifecycleOwner) { color ->
-            view.setBackgroundColor(color)
+        viewModel.color.observe(this.viewLifecycleOwner) { colorLD ->
+            view.setBackgroundColor(colorLD)
+            color = "#${Integer.toHexString(colorLD)}"
         }
 
         viewBinding.radioGroup.setOnCheckedChangeListener { _, id ->
@@ -142,7 +150,8 @@ class NoteDetailsFragment :
                             title = viewBinding.etTypeNote.text.toString(),
                             date = viewBinding.dateTimePicker.getDate().time,
                             setEvent = setEventCondition,
-                            color = color
+                            color = color,
+                            pinned = it.pinned
                         )
                     )
                 } ?: kotlin.run {
@@ -193,6 +202,7 @@ class NoteDetailsFragment :
                 viewBinding.rbColor6.isChecked = true
             }
         }
+        viewModel.setColor(Color.parseColor(color))
     }
 
     private fun getImageId(): Int {
@@ -215,3 +225,19 @@ class NoteDetailsFragment :
             }
         }
 }
+
+fun Fragment.enterTransition(@ColorInt scrim: Int, @IdRes navHostId: Int): MaterialContainerTransform =
+    MaterialContainerTransform().apply {
+        drawingViewId = navHostId
+        duration = resources.getInteger(R.integer.config_screenAnimTime300).toLong()
+        interpolator = FastOutSlowInInterpolator()
+        scrimColor = scrim
+    }
+
+fun Fragment.returnTransition(@ColorInt scrim: Int, @IdRes navHostId: Int): MaterialContainerTransform =
+    MaterialContainerTransform().apply {
+        drawingViewId = navHostId
+        duration = resources.getInteger(R.integer.config_screenAnimTime300).toLong()
+        interpolator = FastOutSlowInInterpolator()
+        scrimColor = scrim
+    }

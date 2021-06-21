@@ -45,7 +45,7 @@ class NoteRepository(
         sortingOrder: SortingOrder
     ): SimpleSQLiteQuery {
         return SimpleSQLiteQuery(
-            "SELECT * FROM notes WHERE accountName == '$accountName' AND title LIKE '%$query%' ORDER BY ${sortingField.value} ${sortingOrder.value}"
+            "SELECT * FROM notes WHERE accountName == '$accountName' AND title LIKE '%$query%' ORDER BY pinned AND ${sortingField.value} ${sortingOrder.value}"
         )
     }
 
@@ -111,6 +111,12 @@ class NoteRepository(
                 notesDao.updateNote(postponedNote)
                 notificationRepository.setNotification(postponedNote)
             }
+        }
+    }
+
+    suspend fun pinNote(note: Note) {
+        withContext(Dispatchers.IO) {
+            notesDao.pinNote(note.id, note.pinned.not())
         }
     }
 }

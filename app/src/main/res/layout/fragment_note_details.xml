@@ -34,7 +34,6 @@
                 android:background="@color/transparent"
                 android:elevation="0dp"
                 android:fitsSystemWindows="true"
-                app:menu="@menu/edit_note"
                 app:title="@string/add_new_note" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -139,7 +138,7 @@
     <com.techmeskills.mydateandtimepicker.DateAndTimePickerView
         android:id="@+id/dateTimePicker"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="150dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/btnConfirm"
         app:layout_constraintEnd_toEndOf="parent"

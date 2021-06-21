@@ -33,8 +33,7 @@
                 android:background="@color/transparent"
                 android:elevation="0dp"
                 android:fitsSystemWindows="true"
-                app:title="@string/welcome"
-                app:titleTextAppearance="@style/materialToolbar_titleText" />
+                app:title="@string/welcome" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 

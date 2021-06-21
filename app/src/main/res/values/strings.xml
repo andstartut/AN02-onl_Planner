@@ -36,4 +36,7 @@
     <string name="actionbar_sort_by_date">Sort by date</string>
     <string name="actionbar_sort_by_title">Sort by title</string>
     <string name="search_hint">Search note</string>
+    <string name="note_context_share">Share</string>
+    <string name="note_context_pin">Pin</string>
+    <string name="note_context_delete">Delete</string>
 </resources>

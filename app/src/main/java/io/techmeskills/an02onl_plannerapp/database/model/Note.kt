@@ -26,5 +26,6 @@ data class Note(
     val accountName: String,
     val cloudSync: Boolean = false,
     val setEvent: Boolean = false,
-    val color: String
+    val color: String,
+    val pinned: Boolean = false
 ) : Parcelable

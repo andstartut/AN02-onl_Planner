@@ -11,7 +11,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MainViewModel(
     private val noteRepository: NoteRepository,
@@ -24,14 +26,17 @@ class MainViewModel(
     private val sortingFieldFlow = MutableStateFlow(SortingField.NONE)
     private val sortingOrderingFlow = MutableStateFlow(SortingOrder.DESC)
 
+    val spinnerDataLD = accountRepository.spinnerData().asLiveData()
+
+    var progressIndicatorLD = MutableLiveData<Boolean>()
+
     val currentAccountNotesListLD: LiveData<List<Note>> =
         combine(
             searchFlow,
             sortingFieldFlow,
             sortingOrderingFlow
-        ) {
-            query, field, ordering ->
-Triple(query, field, ordering)
+        ) { query, field, ordering ->
+            Triple(query, field, ordering)
         }.flatMapLatest {
             noteRepository.currentAccountNotesSortedFlow(it.first, it.second, it.third)
         }.asLiveData()
@@ -58,10 +63,6 @@ Triple(query, field, ordering)
         }
     }
 
-    val spinnerDataLD = accountRepository.spinnerData().asLiveData()
-
-    var progressIndicatorLD = MutableLiveData<Boolean>()
-
     fun changeAccount(name: String, position: Int) {
         launch {
             accountRepository.switchBetweenAccountsByName(name, position)
@@ -82,6 +83,12 @@ Triple(query, field, ordering)
         callback(noteCopy)
     }
 
+    fun delete(note: Note) {
+        launch {
+            noteRepository.deleteNote(note)
+        }
+    }
+
     @ExperimentalCoroutinesApi
     fun importNotes() {
         launch {
@@ -98,14 +105,15 @@ Triple(query, field, ordering)
         }
     }
 
-    fun sortByDate() {
+    fun pinNote(note: Note) {
         launch {
-            currentAccountNotesListLD.map { list ->
-                println("AAA")
-                list.sortedBy {note ->
-                    note.date
-                }
-            }
+            noteRepository.pinNote(note)
+        }
+    }
+
+    fun filterTitle(query: String) {
+        launch {
+            searchFlow.emit(query)
         }
     }
 }

@@ -121,9 +121,8 @@ class DateAndTimePickerView @JvmOverloads constructor(
                 if (snapDistance[0] != 0 || snapDistance[1] != 0) {
                     scrollBy(snapDistance[0], snapDistance[1])
                 }
-            }, 500
+            }, 50
         )
-
     }
 
     private fun generateDays(days: Int): List<Date> {
@@ -173,9 +172,23 @@ class DateAndTimePickerView @JvmOverloads constructor(
     fun getDate(): Date {
         return if (selectedDate.time < Date()) {
             Date()
-        } else{
+        } else {
             selectedDate.time
         }
+    }
+
+    fun setDate(date: Date) {
+        val year = yearFormatter.format(date)
+        val month = monthFormatter.format(date)
+        val dayInYear = dayInYearFormatter.format(date)
+        val hour = hourFormatter.format(date)
+        val minutes = minutesFormatter.format(date)
+        val amPm = amPmFormatter.format(date)
+
+        dateRecyclerView.scrollToPosition(generateDays(days).indexOf(date))
+        hoursRecyclerView.scrollToPosition(hoursList().indexOf(date))
+        minutesRecyclerView.scrollToPosition(minutesList().indexOf(date))
+        amPmRecyclerView.scrollToPosition(amPmList().indexOf(date))
     }
 
     @SuppressLint("ConstantLocale")
@@ -183,6 +196,9 @@ class DateAndTimePickerView @JvmOverloads constructor(
 
     @SuppressLint("ConstantLocale")
     val yearFormatter = SimpleDateFormat("yyyy", Locale.getDefault())
+
+    @SuppressLint("ConstantLocale")
+    val dayInYearFormatter = SimpleDateFormat("D", Locale.getDefault())
 
     @SuppressLint("ConstantLocale")
     val dayFormatter = SimpleDateFormat("dd", Locale.getDefault())
@@ -198,18 +214,6 @@ class DateAndTimePickerView @JvmOverloads constructor(
 
     interface DateChangeListener {
         fun onDateChanged(day: Int, month: Month, weekDay: DayOfWeek)
-    }
-
-    interface HourChangeListener {
-        fun onHourChanged(hour: Int)
-    }
-
-    interface MinuteChangeListener {
-        fun onMinuteChanged(minutes: Int)
-    }
-
-    interface AmPmChangeListener {
-        fun onAmPmChanged(time: Int)
     }
 }
 

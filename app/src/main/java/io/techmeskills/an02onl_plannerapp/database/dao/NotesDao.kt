@@ -28,7 +28,7 @@ abstract class NotesDao {
     @Query("SELECT * FROM notes ORDER BY id ASC")
     abstract fun getAllNotesFlow(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY id DESC")
+    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY id AND pinned DESC")
     abstract fun getAccountNotesFlow(accountName: String): Flow<List<Note>>
 
     @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY ABS(:currentTime - date)")
@@ -39,4 +39,7 @@ abstract class NotesDao {
 
     @Query("UPDATE notes SET cloudSync = 1")
     abstract fun setAllNotesSyncWithCloud()
+
+    @Query("UPDATE notes SET pinned = :pinned WHERE id == :noteId")
+    abstract fun pinNote(noteId: Long, pinned: Boolean)
 }

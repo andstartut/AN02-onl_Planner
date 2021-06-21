@@ -33,7 +33,8 @@ class CloudRepository(
                     date = cloudNote.date,
                     setEvent = cloudNote.setEvent,
                     cloudSync = true,
-                    color = cloudNote.color
+                    color = cloudNote.color,
+                    pinned = cloudNote.pinned
                 )
             }
             noteRepository.saveNotes(notes)
@@ -53,13 +54,13 @@ class CloudRepository(
     suspend fun exportNotes(): Boolean {
         try {
             val accountName = accountRepository.getCurrentAccountName()
-            val notes = noteRepository.currentAccountNotesFlow
+            val notes = noteRepository.currentAccountNotesSortedFlow("", SortingField.NONE, SortingOrder.ASC)
             val exportRequestBody =
                 ExportNotesRequestBody(
                     CloudAccount(accountName),
                     accountRepository.phoneId,
                     notes.first().map {
-                        CloudNote(it.title, it.date, it.setEvent, it.color, false)
+                        CloudNote(it.title, it.date, it.setEvent, it.color, it.pinned)
                     })
             val exportResult = retrofitSettings.exportNotes(exportRequestBody).isSuccessful
             if (exportResult) {

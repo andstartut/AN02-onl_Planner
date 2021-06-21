@@ -1,18 +1,22 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.view.View.inflate
 import android.view.animation.AlphaAnimation
 import android.widget.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -21,12 +25,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.techmeskills.an02onl_plannerapp.R
 import io.techmeskills.an02onl_plannerapp.animation.FabReveal
+import io.techmeskills.an02onl_plannerapp.databinding.ActivityMainBinding.inflate
 import io.techmeskills.an02onl_plannerapp.databinding.FragmentMainBinding
 import io.techmeskills.an02onl_plannerapp.support.NavigationFragment
 import io.techmeskills.an02onl_plannerapp.support.navigateSafe
 import io.techmeskills.an02onl_plannerapp.support.setVerticalMargin
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_main), SearchView.OnQueryTextListener {
@@ -40,6 +46,23 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             view?.findNavController()?.navigate(
                 MainFragmentDirections.toNoteDetailsFragment(note)
             )
+        },
+        onLongClick = { note ->
+            viewModel.pinNote(note)
+
+        },
+        onLongClickShare = { note ->
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(
+                Intent.EXTRA_TEXT,
+                "${note.title}\n${SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(note.date)}"
+            )
+            intent.type = "text/plain"
+            startActivity(Intent.createChooser(intent, "Share To:"))
+        },
+        onLongClickDelete = { note ->
+            viewModel.delete(note)
         }
     )
 
@@ -57,6 +80,8 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
         animation.startOffset = 100
         viewBinding.ivToolbarBackground.setImageResource(getImageId())
         viewBinding.ivToolbarBackground.startAnimation(animation)
+
+        viewBinding.btnAddNew.transitionName = MainFragment.ADD_FAB_ANIMATION
 
         val menu = viewBinding.topAppBar.menu
         val itemSpinner: MenuItem = menu.getItem(TOOLBAR_SPINNER_ITEM)
@@ -106,12 +131,12 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
                     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
                         override fun onQueryTextSubmit(query: String): Boolean {
-                            adapter.filter.filter(query)
+//                            viewModel.filterTitle(query)
                             return false
                         }
 
                         override fun onQueryTextChange(s: String): Boolean {
-                            adapter.filter.filter(s)
+                            viewModel.filterTitle(s)
                             return true
                         }
                     })
@@ -143,25 +168,29 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 viewModel.deleteWithUndo(adapter.currentList[viewHolder.adapterPosition]) { note ->
                     Snackbar.make(view, R.string.note_removed, Snackbar.LENGTH_LONG)
-                        .setAction(R.string.UNDO, View.OnClickListener {
+                        .setAction(R.string.UNDO ) {
                             viewModel.addNote(note)
-                        })
+                        }
                         .show()
                 }
             }
         }
         ItemTouchHelper(swipeHandler).attachToRecyclerView(viewBinding.recyclerView)
 
-        viewBinding.btnAddNew.setOnClickListener {
-            FabReveal(viewBinding.btnAddNew, requireView()).apply {
-                start(transaction = {
-                    findNavController()
-                        .navigateSafe(
-                            MainFragmentDirections.toNoteDetailsFragment(null)
-                        )
-                })
-            }
-
+        viewBinding.btnAddNew.setOnClickListener { FAB_view ->
+            val alphaFab = ObjectAnimator.ofFloat(FAB_view, View.ALPHA, 0f)
+            val scaleFab = ObjectAnimator.ofPropertyValuesHolder(
+                FAB_view,
+                PropertyValuesHolder.ofFloat(View.SCALE_Y, 10f),
+                PropertyValuesHolder.ofFloat(View.SCALE_X, 10f)
+            )
+            AnimatorSet().apply {
+                duration = resources.getInteger(R.integer.config_screenAnimTime1000).toLong()
+                playTogether(alphaFab, scaleFab)
+            }.start()
+            findNavController().navigateSafe(
+                MainFragmentDirections.toNoteDetailsFragment(null)
+            )
         }
     }
 
@@ -191,6 +220,7 @@ class MainFragment : NavigationFragment<FragmentMainBinding>(R.layout.fragment_m
     }
 
     companion object {
+        const val ADD_FAB_ANIMATION = "ADD_FAB_ANIMATION"
         const val TOOLBAR_SPINNER_ITEM = 0
     }
 
