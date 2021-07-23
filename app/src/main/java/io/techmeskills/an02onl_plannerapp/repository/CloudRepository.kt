@@ -9,11 +9,9 @@ import io.techmeskills.an02onl_plannerapp.cloud.IRetrofitSettings
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import kotlin.coroutines.coroutineContext
 
 class CloudRepository(
     private val accountRepository: AccountRepository,
@@ -34,7 +32,9 @@ class CloudRepository(
                     title = cloudNote.title,
                     date = cloudNote.date,
                     setEvent = cloudNote.setEvent,
-                    cloudSync = true
+                    cloudSync = true,
+                    color = cloudNote.color,
+                    pinned = cloudNote.pinned
                 )
             }
             noteRepository.saveNotes(notes)
@@ -54,13 +54,13 @@ class CloudRepository(
     suspend fun exportNotes(): Boolean {
         try {
             val accountName = accountRepository.getCurrentAccountName()
-            val notes = noteRepository.currentAccountNotesFlow
+            val notes = noteRepository.currentAccountNotesSortedFlow("", SortingField.NONE, SortingOrder.ASC)
             val exportRequestBody =
                 ExportNotesRequestBody(
                     CloudAccount(accountName),
                     accountRepository.phoneId,
                     notes.first().map {
-                        CloudNote(it.title, it.date, it.setEvent)
+                        CloudNote(it.title, it.date, it.setEvent, it.color, it.pinned)
                     })
             val exportResult = retrofitSettings.exportNotes(exportRequestBody).isSuccessful
             if (exportResult) {

@@ -1,14 +1,19 @@
 package io.techmeskills.an02onl_plannerapp.screen.main
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
 import io.techmeskills.an02onl_plannerapp.database.model.Note
-import io.techmeskills.an02onl_plannerapp.repository.AccountRepository
-import io.techmeskills.an02onl_plannerapp.repository.CloudRepository
-import io.techmeskills.an02onl_plannerapp.repository.NoteRepository
+import io.techmeskills.an02onl_plannerapp.repository.*
 import io.techmeskills.an02onl_plannerapp.support.CoroutineViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.*
 
 class MainViewModel(
     private val noteRepository: NoteRepository,
@@ -17,11 +22,46 @@ class MainViewModel(
 ) :
     CoroutineViewModel() {
 
-    val currentAccountNotesListLD = noteRepository.currentAccountNotesFlow.asLiveData()
+    private val searchFlow = MutableStateFlow("")
+    private val sortingFieldFlow = MutableStateFlow(SortingField.NONE)
+    private val sortingOrderingFlow = MutableStateFlow(SortingOrder.DESC)
 
     val spinnerDataLD = accountRepository.spinnerData().asLiveData()
 
     var progressIndicatorLD = MutableLiveData<Boolean>()
+
+    val currentAccountNotesListLD: LiveData<List<Note>> =
+        combine(
+            searchFlow,
+            sortingFieldFlow,
+            sortingOrderingFlow
+        ) { query, field, ordering ->
+            Triple(query, field, ordering)
+        }.flatMapLatest {
+            noteRepository.currentAccountNotesSortedFlow(it.first, it.second, it.third)
+        }.asLiveData()
+
+    fun switchOrderingByDate() {
+        launch {
+            sortingFieldFlow.emit(
+                SortingField.DATE
+            )
+            sortingOrderingFlow.emit(
+                if (sortingOrderingFlow.value == SortingOrder.ASC) SortingOrder.DESC else SortingOrder.ASC
+            )
+        }
+    }
+
+    fun switchOrderingByTitle() {
+        launch {
+            sortingFieldFlow.emit(
+                SortingField.TEXT
+            )
+            sortingOrderingFlow.emit(
+                if (sortingOrderingFlow.value == SortingOrder.ASC) SortingOrder.DESC else SortingOrder.ASC
+            )
+        }
+    }
 
     fun changeAccount(name: String, position: Int) {
         launch {
@@ -30,23 +70,23 @@ class MainViewModel(
     }
 
     fun addNote(note: Note) {
-        launch() {
+        launch {
             noteRepository.saveNote(note)
         }
     }
 
     fun deleteWithUndo(note: Note, callback: (Note) -> Unit) {
-        val noteCopy = Note(
-            id = note.id,
-            title = note.title,
-            date = note.date,
-            accountName = note.accountName,
-            setEvent = note.setEvent
-        )
-        launch() {
+        val noteCopy = note.copy()
+        launch {
             noteRepository.deleteNote(note)
         }
         callback(noteCopy)
+    }
+
+    fun delete(note: Note) {
+        launch {
+            noteRepository.deleteNote(note)
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -62,6 +102,18 @@ class MainViewModel(
         launch {
             val exportNotes = cloudRepository.exportNotes()
             progressIndicatorLD.postValue(exportNotes)
+        }
+    }
+
+    fun pinNote(note: Note) {
+        launch {
+            noteRepository.pinNote(note)
+        }
+    }
+
+    fun filterTitle(query: String) {
+        launch {
+            searchFlow.emit(query)
         }
     }
 }

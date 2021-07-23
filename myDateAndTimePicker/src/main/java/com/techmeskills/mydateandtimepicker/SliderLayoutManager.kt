@@ -4,11 +4,12 @@ import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import java.text.FieldPosition
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
+class SliderLayoutManager(context: Context?, private val listSize: Int) : LinearLayoutManager(context) {
 
     init {
         orientation = VERTICAL
@@ -17,13 +18,15 @@ class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
     var callback: OnItemSelectedListener? = null
     private lateinit var recyclerView: RecyclerView
 
+    val snapHelper = LinearSnapHelper()
+
     override fun onAttachedToWindow(view: RecyclerView?) {
         super.onAttachedToWindow(view)
         recyclerView = view!!
 
         // Smart snapping
         recyclerView.onFlingListener = null
-        LinearSnapHelper().attachToRecyclerView(recyclerView)
+        snapHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) {
@@ -72,7 +75,7 @@ class SliderLayoutManager(context: Context?) : LinearLayoutManager(context) {
                 val newDistance = abs(childCenterX - recyclerViewCenterX)
                 if (newDistance < minDistance) {
                     minDistance = newDistance
-                    position = recyclerView.getChildLayoutPosition(child)
+                    position = recyclerView.getChildLayoutPosition(child) % listSize
                 }
             }
 

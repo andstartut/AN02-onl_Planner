@@ -1,6 +1,7 @@
 package io.techmeskills.an02onl_plannerapp.database.dao
 
 import androidx.room.*
+import androidx.sqlite.db.SimpleSQLiteQuery
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import kotlinx.coroutines.flow.Flow
 
@@ -27,9 +28,18 @@ abstract class NotesDao {
     @Query("SELECT * FROM notes ORDER BY id ASC")
     abstract fun getAllNotesFlow(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY id DESC")
-    abstract fun getAllAccountNotesFlow(accountName: String): Flow<List<Note>>
+    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY id AND pinned DESC")
+    abstract fun getAccountNotesFlow(accountName: String): Flow<List<Note>>
+
+    @Query("SELECT * FROM notes WHERE accountName == :accountName ORDER BY ABS(:currentTime - date)")
+    abstract fun getAccountNotesSortedByDate(accountName: String, currentTime: Long): Flow<List<Note>>
+
+    @RawQuery(observedEntities = [Note::class])
+    abstract fun getAccountNotesSortedByDateRawFlow(query: SimpleSQLiteQuery): Flow<List<Note>>
 
     @Query("UPDATE notes SET cloudSync = 1")
     abstract fun setAllNotesSyncWithCloud()
+
+    @Query("UPDATE notes SET pinned = :pinned WHERE id == :noteId")
+    abstract fun pinNote(noteId: Long, pinned: Boolean)
 }

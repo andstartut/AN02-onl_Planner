@@ -1,5 +1,6 @@
 package io.techmeskills.an02onl_plannerapp.repository
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import io.techmeskills.an02onl_plannerapp.database.dao.NotesDao
 import io.techmeskills.an02onl_plannerapp.database.model.Note
 import io.techmeskills.an02onl_plannerapp.datastore.Settings
@@ -16,10 +17,37 @@ class NoteRepository(
 ) {
 
     val currentAccountNotesFlow: Flow<List<Note>> =
+        dataStore.getAccountNameFlow().flatMapLatest { accountName ->
+            notesDao.getAccountNotesFlow(accountName)
+        }.flowOn(Dispatchers.IO)
+
+    fun currentAccountNotesSortedFlow(
+        query: String,
+        sortingField: SortingField,
+        sortingOrder: SortingOrder
+    ): Flow<List<Note>> =
         dataStore.getAccountNameFlow()
             .flatMapLatest { accountName ->
-                notesDao.getAllAccountNotesFlow(accountName)
+                notesDao.getAccountNotesSortedByDateRawFlow(
+                    getSortedQuery(
+                        accountName,
+                        query,
+                        sortingField,
+                        sortingOrder
+                    )
+                )
             }.flowOn(Dispatchers.IO)
+
+    private fun getSortedQuery(
+        accountName: String,
+        query: String,
+        sortingField: SortingField,
+        sortingOrder: SortingOrder
+    ): SimpleSQLiteQuery {
+        return SimpleSQLiteQuery(
+            "SELECT * FROM notes WHERE accountName == '$accountName' AND title LIKE '%$query%' ORDER BY pinned AND ${sortingField.value} ${sortingOrder.value}"
+        )
+    }
 
     suspend fun saveNote(note: Note) {
         withContext(Dispatchers.IO) {
@@ -85,4 +113,21 @@ class NoteRepository(
             }
         }
     }
+
+    suspend fun pinNote(note: Note) {
+        withContext(Dispatchers.IO) {
+            notesDao.pinNote(note.id, note.pinned.not())
+        }
+    }
+}
+
+enum class SortingField(val value: String) {
+    TEXT("title"),
+    DATE("date"),
+    NONE("id")
+}
+
+enum class SortingOrder(val value: String) {
+    ASC("ASC"),
+    DESC("DESC")
 }
